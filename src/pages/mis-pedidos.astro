@@ -1,0 +1,277 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+// Fake orders data - replace with real API data
+const orders = [
+  {
+    id: "ORD-2024-001",
+    date: "2024-01-15",
+    status: "Entregado",
+    total: 125000,
+    items: [
+      { name: "Silla de Comedor Moderna", quantity: 4, price: 25000, image: "https://placehold.co/80x80" },
+      { name: "Mesa de Centro Roble", quantity: 1, price: 45000, image: "https://placehold.co/80x80" },
+    ],
+    shipping: {
+      address: "Av. Corrientes 1234, Buenos Aires",
+      trackingNumber: "AR123456789",
+    }
+  },
+  {
+    id: "ORD-2024-002",
+    date: "2024-01-10",
+    status: "En Camino",
+    total: 89000,
+    items: [
+      { name: "Escritorio Minimalista", quantity: 1, price: 89000, image: "https://placehold.co/80x80" },
+    ],
+    shipping: {
+      address: "Av. Corrientes 1234, Buenos Aires",
+      trackingNumber: "AR123456790",
+    }
+  },
+  {
+    id: "ORD-2024-003",
+    date: "2024-01-08",
+    status: "Procesando",
+    total: 67000,
+    items: [
+      { name: "Lampara de Pie Industrial", quantity: 2, price: 33500, image: "https://placehold.co/80x80" },
+    ],
+    shipping: {
+      address: "Av. Corrientes 1234, Buenos Aires",
+      trackingNumber: null,
+    }
+  },
+  {
+    id: "ORD-2023-045",
+    date: "2023-12-20",
+    status: "Cancelado",
+    total: 156000,
+    items: [
+      { name: "Sofa Modular 3 Cuerpos", quantity: 1, price: 156000, image: "https://placehold.co/80x80" },
+    ],
+    shipping: {
+      address: "Av. Corrientes 1234, Buenos Aires",
+      trackingNumber: null,
+    }
+  },
+];
+
+const statusColors: { [key: string]: string } = {
+  Entregado: "bg-green-100 text-green-700",
+  "En Camino": "bg-blue-100 text-blue-700",
+  Procesando: "bg-yellow-100 text-yellow-700",
+  Cancelado: "bg-red-100 text-red-700",
+};
+
+const statusIcons: { [key: string]: string } = {
+  Entregado: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z",
+  "En Camino": "M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4",
+  Procesando: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z",
+  Cancelado: "M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z",
+};
+
+function formatPrice(price: number): string {
+  return new Intl.NumberFormat("es-AR", {
+    style: "currency",
+    currency: "ARS",
+    minimumFractionDigits: 0,
+  }).format(price);
+}
+
+function formatDate(date: string): string {
+  return new Date(date).toLocaleDateString("es-AR", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
+---
+
+<Layout title="Mis Pedidos - MuebleriaIris">
+  <div class="min-h-screen bg-gray-50 py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Header -->
+      <div class="mb-8">
+        <div class="flex items-center gap-3 mb-2">
+          <a href="/mi-cuenta" class="text-gray-400 hover:text-gray-600 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </a>
+          <h1 class="text-3xl font-bold text-gray-900">Mis Pedidos</h1>
+        </div>
+        <p class="text-gray-500">Historial completo de tus compras</p>
+      </div>
+
+      <!-- Filters -->
+      <div class="bg-white rounded-xl shadow-sm p-4 mb-6">
+        <div class="flex flex-wrap items-center gap-4">
+          <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500">
+            <option value="">Todos los estados</option>
+            <option value="entregado">Entregado</option>
+            <option value="en-camino">En Camino</option>
+            <option value="procesando">Procesando</option>
+            <option value="cancelado">Cancelado</option>
+          </select>
+          <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500">
+            <option value="">Ultimos 3 meses</option>
+            <option value="6">Ultimos 6 meses</option>
+            <option value="12">Ultimo año</option>
+            <option value="all">Todo el historial</option>
+          </select>
+          <div class="flex-1 min-w-[200px]">
+            <div class="relative">
+              <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input
+                type="text"
+                placeholder="Buscar por numero de orden..."
+                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Orders List -->
+      <div class="space-y-6">
+        {orders.map((order) => (
+          <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+            <!-- Order Header -->
+            <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
+              <div class="flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-6">
+                  <div>
+                    <p class="text-xs text-gray-500 mb-1">Numero de Orden</p>
+                    <p class="font-semibold text-gray-900">{order.id}</p>
+                  </div>
+                  <div>
+                    <p class="text-xs text-gray-500 mb-1">Fecha</p>
+                    <p class="text-sm text-gray-900">{formatDate(order.date)}</p>
+                  </div>
+                  <div>
+                    <p class="text-xs text-gray-500 mb-1">Total</p>
+                    <p class="text-sm font-bold text-gray-900">{formatPrice(order.total)}</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-3">
+                  <span class={`inline-flex items-center gap-2 text-xs font-medium px-3 py-1.5 rounded-full ${statusColors[order.status]}`}>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={statusIcons[order.status]} />
+                    </svg>
+                    {order.status}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Order Items -->
+            <div class="px-6 py-4">
+              <div class="space-y-4">
+                {order.items.map((item) => (
+                  <div class="flex items-center gap-4">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      class="w-20 h-20 object-cover rounded-lg"
+                    />
+                    <div class="flex-1">
+                      <h3 class="font-medium text-gray-900">{item.name}</h3>
+                      <p class="text-sm text-gray-500">Cantidad: {item.quantity}</p>
+                    </div>
+                    <p class="font-semibold text-gray-900">{formatPrice(item.price * item.quantity)}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Shipping Info */}
+              {order.status !== "Cancelado" && (
+                <div class="mt-6 pt-6 border-t border-gray-200">
+                  <div class="flex items-start gap-3">
+                    <svg class="w-5 h-5 text-gray-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <div>
+                      <p class="text-sm font-medium text-gray-900">Direccion de Envio</p>
+                      <p class="text-sm text-gray-600">{order.shipping.address}</p>
+                      {order.shipping.trackingNumber && (
+                        <p class="text-xs text-gray-500 mt-1">
+                          Codigo de Seguimiento: <span class="font-mono text-primary-600">{order.shipping.trackingNumber}</span>
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <!-- Order Actions -->
+            <div class="bg-gray-50 px-6 py-4 border-t border-gray-200">
+              <div class="flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-2">
+                  {order.status === "Entregado" && (
+                    <button class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary-600 hover:bg-primary-50 rounded-lg transition-colors">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                      Comprar Nuevamente
+                    </button>
+                  )}
+                  {order.status === "En Camino" && order.shipping.trackingNumber && (
+                    <button class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary-600 hover:bg-primary-50 rounded-lg transition-colors">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      </svg>
+                      Rastrear Pedido
+                    </button>
+                  )}
+                  {order.status === "Procesando" && (
+                    <button class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                      Cancelar Pedido
+                    </button>
+                  )}
+                </div>
+                <button class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                  Ver Detalles
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <!-- Empty State (if no orders) -->
+      {orders.length === 0 && (
+        <div class="bg-white rounded-xl shadow-sm p-12 text-center">
+          <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 mb-2">No tienes pedidos aun</h3>
+          <p class="text-gray-500 mb-6">Comienza a explorar nuestro catalogo de productos</p>
+          <a
+            href="/catalogo"
+            class="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 text-white font-semibold rounded-xl hover:bg-primary-700 transition-colors"
+          >
+            Ver Catalogo
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </a>
+        </div>
+      )}
+    </div>
+  </div>
+</Layout>

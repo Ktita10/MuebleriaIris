@@ -1,0 +1,361 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "1.1.0",
+  "lastUpdated": "2026-01-22",
+  "description": "Machine-readable skills mapping for MuebleriaIris agent orchestration",
+  
+  "skillsDirectory": "agents/",
+  "copilotSymlinks": ".github/skills/",
+  
+  "patterns": {
+    "frontend": {
+      "astro": {
+        "patterns": [
+          "src/pages/**/*.astro",
+          "src/layouts/**/*.astro"
+        ],
+        "skills": ["muebleria-astro", "muebleria-ui"],
+        "priority": 1,
+        "description": "Astro pages and layouts"
+      },
+      "react-ui": {
+        "patterns": [
+          "src/components/ui/**/*.tsx",
+          "src/components/ui/**/*.jsx"
+        ],
+        "skills": ["muebleria-react", "muebleria-ui"],
+        "priority": 2,
+        "description": "React UI components"
+      },
+      "react-general": {
+        "patterns": [
+          "src/components/**/*.tsx",
+          "src/components/**/*.jsx"
+        ],
+        "skills": ["muebleria-react"],
+        "priority": 3,
+        "description": "General React components",
+        "excludes": ["**/ui/**", "**/mobile/**", "**/desktop/**", "**/*Form*"]
+      },
+      "forms": {
+        "patterns": [
+          "**/*Form*.tsx",
+          "**/*form*.tsx",
+          "src/components/checkout/**/*.tsx",
+          "src/components/auth/**/*.tsx"
+        ],
+        "skills": ["muebleria-forms", "muebleria-react"],
+        "priority": 1,
+        "description": "Forms with validation"
+      },
+      "mobile": {
+        "patterns": [
+          "src/components/mobile/**/*",
+          "src/components/desktop/**/*"
+        ],
+        "skills": ["muebleria-mobile", "muebleria-ui"],
+        "priority": 2,
+        "description": "Mobile and responsive components"
+      },
+      "stores": {
+        "patterns": [
+          "src/stores/**/*.ts",
+          "src/stores/**/*.js"
+        ],
+        "skills": ["muebleria-react"],
+        "priority": 3,
+        "description": "State management stores"
+      }
+    },
+    
+    "backend": {
+      "api-routes": {
+        "patterns": [
+          "backend/app/routes/**/*.py",
+          "backend/app/routes.py"
+        ],
+        "skills": ["muebleria-api", "muebleria-python"],
+        "priority": 1,
+        "description": "API endpoints and routes"
+      },
+      "database": {
+        "patterns": [
+          "backend/app/models.py",
+          "backend/migrations/**/*.py"
+        ],
+        "skills": ["muebleria-db", "muebleria-python"],
+        "priority": 1,
+        "description": "Database models and migrations"
+      },
+      "authentication": {
+        "patterns": [
+          "backend/app/auth/**/*.py",
+          "**/*security*.py",
+          "**/*jwt*.py",
+          "**/*password*.py"
+        ],
+        "skills": ["muebleria-security", "muebleria-python"],
+        "priority": 1,
+        "description": "Authentication and security"
+      },
+      "errors": {
+        "patterns": [
+          "backend/app/errors/**/*.py",
+          "backend/app/middleware/**/*.py",
+          "**/*error*.py",
+          "**/*exception*.py"
+        ],
+        "skills": ["muebleria-errors", "muebleria-python"],
+        "priority": 2,
+        "description": "Error handling and logging"
+      },
+      "integrations": {
+        "patterns": [
+          "backend/app/integrations/**/*.py",
+          "**/*mercadopago*.py",
+          "**/*email*.py",
+          "**/*payment*.py"
+        ],
+        "skills": ["muebleria-integrations", "muebleria-python"],
+        "priority": 2,
+        "description": "External API integrations"
+      }
+    },
+    
+    "testing": {
+      "frontend-tests": {
+        "patterns": [
+          "src/**/*.test.tsx",
+          "src/**/*.test.ts",
+          "src/**/*.spec.tsx",
+          "src/**/*.spec.ts",
+          "tests/**/*.spec.ts",
+          "e2e/**/*.spec.ts"
+        ],
+        "skills": ["muebleria-test-ui"],
+        "priority": 1,
+        "description": "Frontend tests (unit and E2E)"
+      },
+      "backend-tests": {
+        "patterns": [
+          "backend/tests/**/*.py",
+          "backend/**/*_test.py",
+          "backend/**/test_*.py"
+        ],
+        "skills": ["muebleria-test-api", "muebleria-python"],
+        "priority": 1,
+        "description": "Backend tests"
+      }
+    },
+    
+    "documentation": {
+      "markdown": {
+        "patterns": [
+          "**/*.md",
+          "**/README*",
+          "**/GUIDE*",
+          "**/CHANGELOG*",
+          "docs/**/*"
+        ],
+        "skills": ["muebleria-docs"],
+        "priority": 1,
+        "description": "Documentation files"
+      }
+    },
+    
+    "git-operations": {
+      "pull-requests": {
+        "triggers": [
+          "create pr",
+          "make pull request",
+          "create pull request",
+          "open pr",
+          "submit pr"
+        ],
+        "skills": ["pull-request"],
+        "priority": 1,
+        "description": "Git pull request creation"
+      }
+    }
+  },
+  
+  "skillMetadata": {
+    "muebleria-astro": {
+      "category": "frontend",
+      "framework": "Astro 5.16.4",
+      "description": "Astro routing, Islands, SSR/SSG patterns",
+      "path": "agents/astro-pages/SKILL.md"
+    },
+    "muebleria-react": {
+      "category": "frontend",
+      "framework": "React 19.2.1",
+      "description": "React 19 hooks and component patterns",
+      "path": "agents/react-components/SKILL.md"
+    },
+    "muebleria-ui": {
+      "category": "frontend",
+      "framework": "TailwindCSS 4.1.17",
+      "description": "UI components and TailwindCSS 4 styling",
+      "path": "agents/ui-components/SKILL.md"
+    },
+    "muebleria-forms": {
+      "category": "frontend",
+      "framework": "react-hook-form + Zod",
+      "description": "Form handling and validation",
+      "path": "agents/forms-validation/SKILL.md"
+    },
+    "muebleria-mobile": {
+      "category": "frontend",
+      "framework": "TailwindCSS responsive",
+      "description": "Responsive and mobile-first design",
+      "path": "agents/responsive-design/SKILL.md"
+    },
+    "muebleria-api": {
+      "category": "backend",
+      "framework": "Flask REST API",
+      "description": "Flask API endpoints and business logic",
+      "path": "agents/api-backend/SKILL.md"
+    },
+    "muebleria-python": {
+      "category": "backend",
+      "framework": "Python 3.9+",
+      "description": "Python coding standards",
+      "path": "agents/python-dev/SKILL.md"
+    },
+    "muebleria-db": {
+      "category": "backend",
+      "framework": "PostgreSQL + SQLAlchemy",
+      "description": "Database schema and migrations",
+      "path": "agents/database/SKILL.md"
+    },
+    "muebleria-security": {
+      "category": "backend",
+      "framework": "JWT + RBAC",
+      "description": "Authentication and authorization",
+      "path": "agents/auth-security/SKILL.md"
+    },
+    "muebleria-errors": {
+      "category": "backend",
+      "framework": "Python logging",
+      "description": "Error handling and logging",
+      "path": "agents/error-handling/SKILL.md"
+    },
+    "muebleria-integrations": {
+      "category": "backend",
+      "framework": "External APIs",
+      "description": "MercadoPago, email, external services",
+      "path": "agents/external-integrations/SKILL.md"
+    },
+    "muebleria-test-ui": {
+      "category": "testing",
+      "framework": "Playwright + RTL",
+      "description": "Frontend testing (E2E and unit)",
+      "path": "agents/testing-frontend/SKILL.md"
+    },
+    "muebleria-test-api": {
+      "category": "testing",
+      "framework": "pytest",
+      "description": "Backend testing",
+      "path": "agents/testing-backend/SKILL.md"
+    },
+    "muebleria-docs": {
+      "category": "documentation",
+      "framework": "Markdown",
+      "description": "Documentation standards",
+      "path": "agents/documentation/SKILL.md"
+    },
+    "muebleria-deployment": {
+      "category": "devops",
+      "framework": "Docker + CI/CD",
+      "description": "Deployment and infrastructure",
+      "path": "agents/deployment/SKILL.md"
+    },
+    "pull-request": {
+      "category": "git",
+      "framework": "Git + GitHub",
+      "description": "Pull request creation workflow",
+      "path": "agents/git-workflow/SKILL.md"
+    },
+    "skill-creator": {
+      "category": "meta",
+      "framework": "Agent Skills Spec",
+      "description": "Create new agent skills",
+      "path": "agents/skill-creator/SKILL.md"
+    },
+    "skill-sync": {
+      "category": "meta",
+      "framework": "Shell + Markdown",
+      "description": "Sync skill metadata to AGENTS.md",
+      "path": "agents/skill-sync/SKILL.md"
+    }
+  },
+  
+  "matchingRules": {
+    "algorithm": "glob",
+    "caseSensitive": true,
+    "priorityHandling": "lowest-number-wins",
+    "multipleMatches": "invoke-all",
+    "noMatch": "use-best-practices"
+  },
+  
+  "invocationOrder": [
+    "framework-skills",
+    "specialized-skills",
+    "ui-design-skills"
+  ],
+  
+  "frameworkSkills": [
+    "muebleria-astro",
+    "muebleria-react",
+    "muebleria-python"
+  ],
+  
+  "specializedSkills": [
+    "muebleria-forms",
+    "muebleria-security",
+    "muebleria-db",
+    "muebleria-api",
+    "muebleria-errors",
+    "muebleria-integrations",
+    "muebleria-test-ui",
+    "muebleria-test-api"
+  ],
+  
+  "uiDesignSkills": [
+    "muebleria-ui",
+    "muebleria-mobile"
+  ],
+  
+  "examples": [
+    {
+      "file": "src/pages/login.astro",
+      "matches": ["frontend.astro"],
+      "skills": ["muebleria-astro", "muebleria-ui"],
+      "order": ["muebleria-astro", "muebleria-ui"]
+    },
+    {
+      "file": "src/components/auth/LoginForm.tsx",
+      "matches": ["frontend.forms", "frontend.react-general"],
+      "skills": ["muebleria-forms", "muebleria-react"],
+      "order": ["muebleria-react", "muebleria-forms"]
+    },
+    {
+      "file": "backend/app/routes/auth.py",
+      "matches": ["backend.api-routes", "backend.authentication"],
+      "skills": ["muebleria-api", "muebleria-security", "muebleria-python"],
+      "order": ["muebleria-python", "muebleria-api", "muebleria-security"]
+    },
+    {
+      "file": "src/components/ui/Button.tsx",
+      "matches": ["frontend.react-ui"],
+      "skills": ["muebleria-react", "muebleria-ui"],
+      "order": ["muebleria-react", "muebleria-ui"]
+    }
+  ],
+  
+  "validation": {
+    "schemaVersion": "1.0.0",
+    "requiredFields": ["patterns", "skillMetadata", "matchingRules"],
+    "checksumAlgorithm": "sha256"
+  }
+}

@@ -1,0 +1,66 @@
+---
+const features = [
+  {
+    icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />`,
+    title: "Materiales Premium",
+    description:
+      "Utilizamos maderas seleccionadas y materiales de primera calidad para garantizar durabilidad.",
+  },
+  {
+    icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />`,
+    title: "Entrega Rapida",
+    description:
+      "Envios a todo el pais en 3-7 dias habiles. Instalacion incluida en compras mayores.",
+  },
+  {
+    icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />`,
+    title: "Garantia Extendida",
+    description:
+      "2 anios de garantia en todos nuestros productos. Tu tranquilidad es nuestra prioridad.",
+  },
+  {
+    icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />`,
+    title: "Pago Flexible",
+    description:
+      "Hasta 12 cuotas sin interes con todas las tarjetas. Tambien aceptamos transferencias.",
+  },
+];
+---
+
+<section class="section bg-white">
+  <div class="container">
+    <!-- Section Header -->
+    <div class="text-center max-w-2xl mx-auto mb-12 lg:mb-16">
+      <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+        Por que elegirnos
+      </h2>
+      <p class="text-gray-600 text-lg">
+        Mas de 10 anios creando espacios unicos. Conoce las razones por las que
+        miles de clientes confian en nosotros.
+      </p>
+    </div>
+
+    <!-- Features Grid -->
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      {
+        features.map((feature) => (
+          <div class="group text-center p-6 rounded-2xl hover:bg-gray-50 transition-colors">
+            <div class="w-16 h-16 mx-auto mb-6 bg-primary-100 text-primary-600 rounded-2xl flex items-center justify-center group-hover:bg-primary-600 group-hover:text-white transition-colors">
+              <svg
+                class="w-8 h-8"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                set:html={feature.icon}
+              />
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">
+              {feature.title}
+            </h3>
+            <p class="text-gray-600 leading-relaxed">{feature.description}</p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

@@ -1,0 +1,8 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+import { UsuariosManager } from "../../components/admin/UsuariosManager";
+---
+
+<AdminLayout title="Usuarios del Sistema">
+  <UsuariosManager client:load />
+</AdminLayout>

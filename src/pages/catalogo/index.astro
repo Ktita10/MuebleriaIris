@@ -1,0 +1,131 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import CatalogGrid from "../../components/catalog/CatalogGrid";
+
+// Get query params
+const categoria = Astro.url.searchParams.get("categoria");
+const buscar = Astro.url.searchParams.get("buscar");
+const orden = Astro.url.searchParams.get("orden") || "nombre";
+
+// Categories for filtering
+const categories = [
+  { slug: "sofas", name: "Sofas" },
+  { slug: "sillas", name: "Sillas" },
+  { slug: "mesas", name: "Mesas" },
+  { slug: "camas", name: "Camas" },
+  { slug: "estanterias", name: "Estanterias" },
+];
+
+// Page title based on category
+const pageTitle = categoria
+  ? `${categories.find((c) => c.slug === categoria)?.name || "Catalogo"} - Muebleria Iris`
+  : "Catalogo - Muebleria Iris";
+---
+
+<Layout title={pageTitle} description="Explora nuestra coleccion completa de muebles de alta calidad.">
+  <section class="section bg-gray-50">
+    <div class="container">
+      <!-- Page Header -->
+      <div class="mb-8">
+        <nav class="text-sm text-gray-500 mb-4">
+          <a href="/" class="hover:text-primary-600">Inicio</a>
+          <span class="mx-2">/</span>
+          <span class="text-gray-900">Catalogo</span>
+          {
+            categoria && (
+              <>
+                <span class="mx-2">/</span>
+                <span class="text-gray-900 capitalize">{categoria}</span>
+              </>
+            )
+          }
+        </nav>
+
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div>
+            <h1 class="text-3xl lg:text-4xl font-bold text-gray-900">
+              {categoria ? categories.find((c) => c.slug === categoria)?.name : "Catalogo"}
+            </h1>
+            <p class="text-gray-600 mt-2">
+              {categoria ? `Todos los productos en ${categoria}` : "Explora toda nuestra coleccion"}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filters Bar -->
+      <div class="flex flex-col lg:flex-row gap-4 mb-8">
+        <!-- Category Pills -->
+        <div class="flex flex-wrap gap-2">
+          <a
+            href="/catalogo"
+            class={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+              !categoria
+                ? "bg-primary-600 text-white"
+                : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
+            }`}
+          >
+            Todos
+          </a>
+          {
+            categories.map((cat) => (
+              <a
+                href={`/catalogo?categoria=${cat.slug}`}
+                class={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                  categoria === cat.slug
+                    ? "bg-primary-600 text-white"
+                    : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
+                }`}
+              >
+                {cat.name}
+              </a>
+            ))
+          }
+        </div>
+
+        <!-- Search & Sort -->
+        <div class="flex gap-4 lg:ml-auto">
+          <form class="relative flex-1 lg:w-64">
+            <input
+              type="search"
+              name="buscar"
+              placeholder="Buscar productos..."
+              value={buscar || ""}
+              class="w-full px-4 py-2 pl-10 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+            />
+            <svg
+              class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+          </form>
+
+          <select
+            name="orden"
+            class="px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+          >
+            <option value="nombre" selected={orden === "nombre"}>Nombre A-Z</option>
+            <option value="precio_asc" selected={orden === "precio_asc"}>Menor precio</option>
+            <option value="precio_desc" selected={orden === "precio_desc"}>Mayor precio</option>
+            <option value="nuevo" selected={orden === "nuevo"}>Mas recientes</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Product Grid (React Component with client:load for interactivity) -->
+      <CatalogGrid 
+        client:load 
+        categoria={categoria} 
+        buscar={buscar}
+        orden={orden}
+      />
+    </div>
+  </section>
+</Layout>

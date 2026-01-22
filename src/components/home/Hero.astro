@@ -1,0 +1,118 @@
+---
+// Hero section for homepage with background image overlay
+---
+
+<section class="relative min-h-screen flex items-center justify-center overflow-hidden">
+  <!-- Background Image -->
+  <div class="absolute inset-0 z-0">
+    <img 
+      src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=1920&q=80&auto=format&fit=crop"
+      alt="Modern living room with elegant furniture"
+      class="w-full h-full object-cover"
+      loading="eager"
+    />
+    <!-- Dark Overlay for Text Readability -->
+    <div class="absolute inset-0 bg-gradient-to-br from-black/60 via-black/50 to-black/60"></div>
+  </div>
+
+  <!-- Content Overlay -->
+  <div class="container relative z-10 py-20 px-4">
+    <div class="max-w-4xl mx-auto text-center text-white">
+      <!-- Badge -->
+      <span
+        class="inline-block px-4 py-2 bg-white/10 backdrop-blur-md text-white border border-white/20 rounded-full text-sm font-medium mb-6"
+      >
+        Nuevos modelos 2025
+      </span>
+
+      <!-- Title -->
+      <h1
+        class="text-4xl sm:text-5xl lg:text-7xl font-bold leading-tight mb-6"
+      >
+        Muebles que
+        <span class="text-primary-400">transforman</span>
+        tu hogar
+      </h1>
+
+      <!-- Description -->
+      <p class="text-lg sm:text-xl text-gray-200 mb-10 max-w-2xl mx-auto">
+        Descubre nuestra coleccion de muebles de alta calidad, disenados para
+        combinar estilo, confort y durabilidad. Envios a todo el pais.
+      </p>
+
+      <!-- CTAs -->
+      <div class="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+        <a
+          href="/catalogo"
+          class="inline-flex items-center justify-center px-8 py-4 bg-primary-600 text-white font-semibold rounded-xl hover:bg-primary-700 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+        >
+          Ver Catalogo
+          <svg
+            class="w-5 h-5 ml-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+          </svg>
+        </a>
+
+        <a
+          href="/contacto"
+          class="inline-flex items-center justify-center px-8 py-4 bg-white/10 backdrop-blur-md text-white font-semibold rounded-xl hover:bg-white/20 transition-all border border-white/30 hover:border-white/50"
+        >
+          Contactanos
+        </a>
+      </div>
+
+      <!-- Trust Badges -->
+      <div
+        class="flex flex-wrap gap-6 justify-center text-sm text-white/90"
+      >
+        <div class="flex items-center gap-2">
+          <svg
+            class="w-5 h-5 text-green-400"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+              clip-rule="evenodd"></path>
+          </svg>
+          <span>Envio gratis +$50.000</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <svg
+            class="w-5 h-5 text-green-400"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+              clip-rule="evenodd"></path>
+          </svg>
+          <span>Garantia 2 anios</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <svg
+            class="w-5 h-5 text-green-400"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+              clip-rule="evenodd"></path>
+          </svg>
+          <span>12 cuotas sin interes</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

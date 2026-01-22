@@ -1,0 +1,142 @@
+---
+// Featured products - In production, this would come from the API
+const API_BASE = import.meta.env.PUBLIC_API_URL || "http://localhost:5000/api";
+
+// Placeholder products until API is connected
+const placeholderProducts = [
+  {
+    id: 1,
+    nombre: "Sofa Moderno 3 Cuerpos",
+    precio: 450000,
+    categoria: "Sofas",
+    imagen: null,
+    material: "Tela premium",
+  },
+  {
+    id: 2,
+    nombre: "Mesa de Comedor Nordica",
+    precio: 280000,
+    categoria: "Mesas",
+    imagen: null,
+    material: "Madera de roble",
+  },
+  {
+    id: 3,
+    nombre: "Silla Ergonomica Office",
+    precio: 185000,
+    categoria: "Sillas",
+    imagen: null,
+    material: "Malla transpirable",
+  },
+  {
+    id: 4,
+    nombre: "Cama Queen con Respaldo",
+    precio: 520000,
+    categoria: "Camas",
+    imagen: null,
+    material: "Madera maciza",
+  },
+];
+
+// Format price helper
+function formatPrice(price: number): string {
+  return new Intl.NumberFormat("es-AR", {
+    style: "currency",
+    currency: "ARS",
+    minimumFractionDigits: 0,
+  }).format(price);
+}
+---
+
+<section class="section bg-gray-50">
+  <div class="container">
+    <!-- Section Header -->
+    <div
+      class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-12"
+    >
+      <div>
+        <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
+          Productos Destacados
+        </h2>
+        <p class="text-gray-600">Los favoritos de nuestros clientes</p>
+      </div>
+
+      <a
+        href="/catalogo"
+        class="inline-flex items-center gap-2 text-primary-600 font-semibold hover:text-primary-700 transition-colors"
+      >
+        Ver todo el catalogo
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+        </svg>
+      </a>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {
+        placeholderProducts.map((product) => (
+          <article class="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100">
+            {/* Product Image */}
+            <a href={`/producto/${product.id}`} class="block relative aspect-square bg-gray-100 overflow-hidden">
+              {product.imagen ? (
+                <img
+                  src={product.imagen}
+                  alt={product.nombre}
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  loading="lazy"
+                />
+              ) : (
+                <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
+                  <svg
+                    class="w-20 h-20 text-gray-300"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="1"
+                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                </div>
+              )}
+
+              {/* Category Badge */}
+              <span class="absolute top-3 left-3 px-3 py-1 bg-white/90 backdrop-blur-sm text-xs font-medium text-gray-700 rounded-full">
+                {product.categoria}
+              </span>
+
+              {/* Quick Add Button */}
+              <button
+                class="absolute bottom-3 right-3 w-10 h-10 bg-primary-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all shadow-lg hover:bg-primary-700"
+                aria-label="Agregar al carrito"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+              </button>
+            </a>
+
+            {/* Product Info */}
+            <div class="p-4">
+              <span class="text-xs text-gray-500 mb-1 block">{product.material}</span>
+              <h3 class="font-semibold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors line-clamp-2">
+                <a href={`/producto/${product.id}`}>{product.nombre}</a>
+              </h3>
+              <p class="text-lg font-bold text-primary-600">
+                {formatPrice(product.precio)}
+              </p>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>

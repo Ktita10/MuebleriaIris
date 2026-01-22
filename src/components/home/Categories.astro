@@ -1,0 +1,120 @@
+---
+const categories = [
+  {
+    name: "Sofas",
+    slug: "sofas",
+    description: "Comodidad para tu living",
+    productCount: 24,
+    color: "from-blue-500 to-blue-600",
+  },
+  {
+    name: "Sillas",
+    slug: "sillas",
+    description: "Estilo y ergonomia",
+    productCount: 36,
+    color: "from-green-500 to-green-600",
+  },
+  {
+    name: "Mesas",
+    slug: "mesas",
+    description: "El centro de reunion",
+    productCount: 18,
+    color: "from-amber-500 to-amber-600",
+  },
+  {
+    name: "Camas",
+    slug: "camas",
+    description: "Descanso perfecto",
+    productCount: 15,
+    color: "from-purple-500 to-purple-600",
+  },
+  {
+    name: "Estanterias",
+    slug: "estanterias",
+    description: "Organizacion con estilo",
+    productCount: 22,
+    color: "from-rose-500 to-rose-600",
+  },
+];
+---
+
+<section class="section bg-white">
+  <div class="container">
+    <!-- Section Header -->
+    <div class="text-center max-w-2xl mx-auto mb-12">
+      <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+        Explora por Categoria
+      </h2>
+      <p class="text-gray-600 text-lg">
+        Encuentra exactamente lo que buscas navegando nuestras categorias
+        cuidadosamente seleccionadas.
+      </p>
+    </div>
+
+    <!-- Categories Grid -->
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+      {
+        categories.map((category) => (
+          <a
+            href={`/catalogo?categoria=${category.slug}`}
+            class="group relative overflow-hidden rounded-2xl aspect-[4/5] bg-gray-100"
+          >
+            {/* Gradient Background */}
+            <div
+              class={`absolute inset-0 bg-gradient-to-br ${category.color} opacity-90 group-hover:opacity-100 transition-opacity`}
+            />
+
+            {/* Pattern Overlay */}
+            <div class="absolute inset-0 opacity-10">
+              <div
+                class="absolute inset-0"
+                style="background-image: url('data:image/svg+xml,%3Csvg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"%23ffffff\" fill-opacity=\"0.4\" fill-rule=\"evenodd\"%3E%3Ccircle cx=\"3\" cy=\"3\" r=\"3\"/%3E%3Ccircle cx=\"13\" cy=\"13\" r=\"3\"/%3E%3C/g%3E%3C/svg%3E');"
+              />
+            </div>
+
+            {/* Content */}
+            <div class="absolute inset-0 p-6 flex flex-col justify-end text-white">
+              <div class="transform group-hover:-translate-y-2 transition-transform">
+                <h3 class="text-2xl font-bold mb-1">{category.name}</h3>
+                <p class="text-white/80 text-sm mb-3">{category.description}</p>
+                <span class="inline-flex items-center gap-1 text-sm font-medium">
+                  {category.productCount} productos
+                  <svg
+                    class="w-4 h-4 transform group-hover:translate-x-1 transition-transform"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M17 8l4 4m0 0l-4 4m4-4H3"
+                    />
+                  </svg>
+                </span>
+              </div>
+            </div>
+
+            {/* Icon */}
+            <div class="absolute top-4 right-4 w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center group-hover:bg-white/30 transition-colors">
+              <svg
+                class="w-6 h-6 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                />
+              </svg>
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</section>
