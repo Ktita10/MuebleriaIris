@@ -9,7 +9,31 @@
  * Objetivo: Centralizar y tipar el acceso a los endpoints desde el frontend React/Astro, favoreciendo la mantenibilidad.
  */
 
-const API_BASE_URL = 'http://localhost:5000/api';
+// ============================================================================
+// CONFIGURACIÓN BASE
+// ============================================================================
+
+/**
+ * URL base del servidor backend.
+ * Usa variable de entorno PUBLIC_API_BASE o fallback a localhost.
+ */
+export const API_BASE = import.meta.env.PUBLIC_API_BASE || 'http://localhost:5000';
+
+/**
+ * URL base de la API (incluye /api).
+ */
+export const API_BASE_URL = `${API_BASE}/api`;
+
+/**
+ * Construye la URL completa para una imagen del servidor.
+ * @param path - Ruta relativa de la imagen (e.g., "/uploads/imagen.jpg")
+ * @returns URL completa de la imagen
+ */
+export function getImageUrl(path: string | null | undefined): string {
+  if (!path) return '/placeholder-product.jpg';
+  if (path.startsWith('http')) return path;
+  return `${API_BASE}${path.startsWith('/') ? path : '/' + path}`;
+}
 
 interface ApiError {
   error: string;
@@ -17,20 +41,61 @@ interface ApiError {
 }
 
 /**
- * Generic fetch wrapper with error handling
+ * Get auth token from localStorage (client-side only)
+ */
+function getAuthToken(): string | null {
+  if (typeof window === 'undefined') return null;
+  return localStorage.getItem('muebleria-token');
+}
+
+/**
+ * Handle authentication errors (401/403/422) - auto logout
+ */
+function handleAuthError(status: number): void {
+  if (typeof window === 'undefined') return;
+  
+  if (status === 401 || status === 403 || status === 422) {
+    // Clear auth data
+    localStorage.removeItem('muebleria-token');
+    localStorage.removeItem('muebleria-user');
+    
+    // Redirect to login if not already there
+    if (!window.location.pathname.includes('/login')) {
+      window.location.href = '/login?expired=true';
+    }
+  }
+}
+
+/**
+ * Generic fetch wrapper with error handling and JWT auth
  */
 async function apiFetch<T>(
   endpoint: string,
   options?: RequestInit
 ): Promise<T> {
   try {
+    // Build headers with auth token if available
+    const token = getAuthToken();
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+      ...options?.headers,
+    };
+    
+    if (token) {
+      (headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
+    }
+    
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        ...options?.headers,
-      },
+      headers,
     });
+
+    // Handle auth errors
+    if (response.status === 401 || response.status === 403 || response.status === 422) {
+      handleAuthError(response.status);
+      const error: ApiError = await response.json().catch(() => ({ error: 'Sesión expirada' }));
+      throw new Error(error.error || 'Sesión expirada. Por favor, inicia sesión nuevamente.');
+    }
 
     if (!response.ok) {
       const error: ApiError = await response.json();
@@ -39,10 +104,11 @@ async function apiFetch<T>(
 
     return await response.json();
   } catch (error) {
+    console.error("API Error:", error); // Log para depuración
     if (error instanceof Error) {
       throw error;
     }
-    throw new Error('Error de conexión con el servidor');
+    throw new Error('Error de conexión con el servidor. Verifica que el backend esté corriendo.');
   }
 }
 
@@ -86,15 +152,16 @@ export const categoriasApi = {
 
 export interface Cliente {
   id: number;
-  nombre_cliente: string;
-  apellido_cliente: string;
+  // API returns these names from to_dict()
+  nombre: string;
+  apellido: string;
   dni_cuit: string;
-  email_cliente: string;
+  email: string;
   telefono: string;
-  direccion_cliente: string;
-  ciudad_cliente: string;
+  direccion: string;
+  ciudad: string;
   codigo_postal: string;
-  provincia_cliente: string;
+  provincia: string;
   fecha_registro: string;
 }
 
@@ -147,6 +214,7 @@ export interface Producto {
   material: string;
   categoria: string;
   imagen_principal: string | null;
+  stock?: number;
 }
 
 export interface ProductoInput {
@@ -211,6 +279,10 @@ export const productosApi = {
   },
   getImages: (productoId: number) => apiFetch<ImagenProducto[]>(`/productos/${productoId}/imagenes`),
   deleteImage: (imageId: number) => apiFetch<{ mensaje: string }>(`/imagenes/${imageId}`, { method: 'DELETE' }),
+  // Papelera (Trash) methods
+  getPapelera: () => apiFetch<Producto[]>('/productos/papelera'),
+  restaurar: (id: number) => apiFetch<{ mensaje: string; producto: Producto }>(`/productos/${id}/restaurar`, { method: 'POST' }),
+  eliminarPermanente: (id: number) => apiFetch<{ mensaje: string }>(`/productos/${id}/eliminar-permanente`, { method: 'DELETE' }),
 };
 
 // ============================================================================
@@ -230,7 +302,7 @@ export interface UsuarioInput {
   nombre_us: string;
   apellido_us: string;
   email_us: string;
-  password_hash: string;
+  password?: string;
   id_rol: number;
   activo?: boolean;
 }
@@ -397,10 +469,12 @@ export const ordenesApi = {
 // ============================================================================
 
 export interface Inventario {
+  id: number;  // id_inventario from backend
   id_producto: number;
-  stock: number;
+  stock: number;  // cantidad from backend (mapped)
   ubicacion: string;
-  alerta_stock: boolean;
+  alerta_stock: boolean;  // computed: stock <= stock_minimo
+  stock_minimo?: number;
 }
 
 export interface InventarioAjuste {
@@ -417,8 +491,8 @@ export const inventarioApi = {
   },
   getByProducto: (productoId: number) =>
     apiFetch<Inventario>(`/inventario/producto/${productoId}`),
-  ajustar: (id: number, data: InventarioAjuste) =>
-    apiFetch<Inventario>(`/inventario/${id}/ajustar`, {
+  ajustar: (inventarioId: number, data: InventarioAjuste) =>
+    apiFetch<Inventario>(`/inventario/${inventarioId}/ajustar`, {
       method: 'PATCH',
       body: JSON.stringify(data),
     }),
@@ -461,18 +535,110 @@ export interface DashboardMetricas {
 }
 
 export const dashboardApi = {
-
-/**
-==================================================
-Flujo de trabajo y comunicación:
-
-- Todos los módulos React/Astro que necesitan datos llaman funciones de este archivo (por ejemplo, al mostrar productos, registrar usuarios, etc.).
-- Se comunica vía HTTP con el backend Flask en /api. Si hay error, lanza excepciones capturadas por los componentes llamadores.
-- Las funciones buscan emular el acceso a recursos REST (getAll, getById, create, etc.) y cada entidad de negocio tiene aquí su namespace de API.
-- Es el único punto de entrada/salida para datos en el frontend (fuera de pruebas/mock).
-==================================================
-*/
-
   getMetricas: (periodo: 'hoy' | 'semana' | 'mes' | 'anio' = 'mes') =>
     apiFetch<DashboardMetricas>(`/dashboard/metricas?periodo=${periodo}`),
+};
+
+// ============================================================================
+// FAVORITOS
+// ============================================================================
+
+export interface Favorito {
+  id: number;
+  id_cliente: number;
+  id_producto: number;
+  fecha_agregado: string;
+  producto: Producto;
+}
+
+export interface FavoritoInput {
+  id_cliente: number;
+  id_producto: number;
+}
+
+export const favoritosApi = {
+  getByCliente: (idCliente: number) =>
+    apiFetch<{ mensaje: string; favoritos: Favorito[] }>(`/favoritos?id_cliente=${idCliente}`),
+  
+  add: (data: FavoritoInput) =>
+    apiFetch<{ mensaje: string; favorito: Favorito }>('/favoritos', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  
+  remove: (data: FavoritoInput) =>
+    apiFetch<{ mensaje: string }>('/favoritos', {
+      method: 'DELETE',
+      body: JSON.stringify(data),
+    }),
+  
+  removeById: (id: number) =>
+    apiFetch<{ mensaje: string }>(`/favoritos/${id}`, {
+      method: 'DELETE',
+    }),
+};
+
+// ============================================================================
+// AUTENTICACIÓN
+// ============================================================================
+
+export interface LoginInput {
+  email: string;
+  password: string;
+}
+
+export interface RegisterInput {
+  nombre: string;
+  apellido: string;
+  email: string;
+  password: string;
+  telefono?: string;
+  direccion?: string;
+  ciudad?: string;
+  codigo_postal?: string;
+  provincia?: string;
+}
+
+export interface AuthResponse {
+  message: string;
+  token: string;
+  user: {
+    id: number;
+    email: string;
+    nombre: string;
+    apellido: string;
+    rol: string;
+    cliente_id?: number;
+  };
+}
+
+export interface AuthMeResponse {
+  id: number;
+  email: string;
+  nombre: string;
+  apellido: string;
+  rol: string;
+  cliente_id?: number | null;
+}
+
+export const authApi = {
+  login: (data: LoginInput) =>
+    apiFetch<AuthResponse>('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  
+  register: (data: RegisterInput) =>
+    apiFetch<AuthResponse>('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  
+  logout: () =>
+    apiFetch<{ mensaje: string }>('/auth/logout', {
+      method: 'POST',
+    }),
+  
+  me: () =>
+    apiFetch<AuthMeResponse>('/auth/me'),
 };

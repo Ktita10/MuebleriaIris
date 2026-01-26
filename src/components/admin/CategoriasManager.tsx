@@ -175,7 +175,7 @@ export function CategoriasManager() {
         </div>
         <button
           onClick={openCreateModal}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="btn-action btn-action-primary"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -198,7 +198,7 @@ export function CategoriasManager() {
               <div className="flex gap-2">
                 <button
                   onClick={() => openEditModal(categoria)}
-                  className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors shadow-sm"
+                  className="btn-action btn-action-primary"
                   title="Editar categoría"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -208,7 +208,7 @@ export function CategoriasManager() {
                 </button>
                 <button
                   onClick={() => openDeleteDialog(categoria)}
-                  className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors shadow-sm"
+                  className="btn-action btn-action-danger"
                   title="Eliminar categoría"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -235,7 +235,7 @@ export function CategoriasManager() {
           <p className="text-gray-600 mb-4">Comienza creando tu primera categoría</p>
           <button
             onClick={openCreateModal}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="btn-action btn-action-primary"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -296,14 +296,14 @@ export function CategoriasManager() {
               type="button"
               onClick={() => setIsCreateModalOpen(false)}
               disabled={isSubmitting}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+              className="btn-action btn-action-outline"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              className="btn-action btn-action-primary"
             >
               {isSubmitting ? 'Creando...' : 'Crear Categoría'}
             </button>
@@ -360,14 +360,14 @@ export function CategoriasManager() {
               type="button"
               onClick={() => setIsEditModalOpen(false)}
               disabled={isSubmitting}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+              className="btn-action btn-action-outline"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              className="btn-action btn-action-primary"
             >
               {isSubmitting ? 'Guardando...' : 'Guardar Cambios'}
             </button>

@@ -3,8 +3,9 @@ Blueprint de Administración - Usuarios, Roles, Autenticación
 Módulo ERP: Gestión administrativa y de usuarios
 """
 from flask import Blueprint, jsonify, request
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from .. import db
-from ..models import Usuario, Rol
+from ..models import Usuario, Rol, Cliente
 from ..security import hash_password, verify_password, is_password_hashed
 from datetime import datetime, timezone
 
@@ -331,6 +332,87 @@ def delete_usuario(id):
 #                              AUTENTICACIÓN
 # ==============================================================================
 
+@admin_bp.route('/auth/register', methods=['POST'])
+def register():
+    """
+    Registro de usuario cliente
+    Crea un Usuario (login) y un Cliente (datos de facturación)
+    """
+    data = request.get_json()
+    
+    # Validación básica
+    campos_requeridos = ["nombre", "apellido", "email", "password"]
+    for campo in campos_requeridos:
+        if campo not in data or not data[campo].strip():
+            return jsonify({"error": f"El campo '{campo}' es requerido"}), 400
+            
+    email = data["email"].strip().lower()
+    
+    # Verificar existencia en ambas tablas
+    if Usuario.query.filter_by(email_us=email).first():
+        return jsonify({"error": "El email ya está registrado"}), 409
+    if Cliente.query.filter_by(email_cliente=email).first():
+        return jsonify({"error": "El email ya está registrado como cliente"}), 409
+        
+    # Obtener rol 'cliente' o crear si no existe
+    rol_cliente = Rol.query.filter(Rol.nombre_rol.ilike('%cliente%')).first()
+    if not rol_cliente:
+        rol_cliente = Rol(nombre_rol="Cliente", descripcion="Cliente registrado")
+        db.session.add(rol_cliente)
+        db.session.flush()
+        
+    try:
+        # 1. Crear Usuario para login
+        nuevo_usuario = Usuario(
+            nombre_us=data["nombre"].strip(),
+            apellido_us=data["apellido"].strip(),
+            email_us=email,
+            password_hash=hash_password(data["password"]),
+            id_rol=rol_cliente.id_rol,
+            activo=True
+        )
+        db.session.add(nuevo_usuario)
+        
+        # 2. Crear Cliente para facturación/pedidos
+        # Usamos placeholders para campos requeridos no presentes en registro simple
+        nuevo_cliente = Cliente(
+            nombre_cliente=data["nombre"].strip(),
+            apellido_cliente=data["apellido"].strip(),
+            email_cliente=email,
+            dni_cuit=f"GEN-{int(datetime.now().timestamp())}", # Placeholder único
+            telefono="Sin especificar",
+            direccion_cliente="Sin especificar",
+            ciudad_cliente="Sin especificar",
+            provincia_cliente="Sin especificar",
+            codigo_postal="0000"
+        )
+        db.session.add(nuevo_cliente)
+        
+        db.session.commit()
+        
+        return jsonify({
+            "message": "Registro exitoso",
+            "user": {
+                "id": nuevo_usuario.id_usuarios,
+                "email": nuevo_usuario.email_us,
+                "nombre": nuevo_usuario.nombre_us,
+                "apellido": nuevo_usuario.apellido_us,
+                "rol": "cliente",
+                "cliente_id": nuevo_cliente.id_cliente
+            },
+            "token": create_access_token(identity={
+                "id": nuevo_usuario.id_usuarios,
+                "email": nuevo_usuario.email_us,
+                "rol": "cliente",
+                "cliente_id": nuevo_cliente.id_cliente
+            })
+        }), 201
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "Error al registrar usuario", "detalle": str(e)}), 500
+
+
 @admin_bp.route('/auth/login', methods=['POST'])
 def login():
     """
@@ -339,8 +421,6 @@ def login():
         "email": str,
         "password": str
     }
-    
-    TODO: Implementar JWT con Flask-JWT-Extended
     """
     data = request.get_json()
 
@@ -356,11 +436,15 @@ def login():
     if not usuario.activo:
         return jsonify({"error": "Usuario inactivo"}), 403
 
-    # Verificar contraseña (soporta tanto hash como texto plano legacy)
+    # Verificar contraseña
     if not verify_password(data["password"], usuario.password_hash):
         return jsonify({"error": "Credenciales inválidas"}), 401
 
-    # TODO: Generar JWT token
+    # Buscar si tiene perfil de cliente asociado (por email)
+    cliente = Cliente.query.filter_by(email_cliente=usuario.email_us).first()
+    cliente_id = cliente.id_cliente if cliente else None
+
+    # TODO: Generar JWT token real
     usuario_dict = usuario.to_dict()
     rol_nombre = usuario.rol.nombre_rol.lower()
     
@@ -372,16 +456,27 @@ def login():
     else:
         rol_frontend = "cliente"
     
+    user_response = {
+        "id": usuario_dict["id"],
+        "email": usuario_dict["email"],
+        "nombre": usuario_dict["nombre"],
+        "apellido": usuario_dict["apellido"],
+        "rol": rol_frontend
+    }
+    
+    # Adjuntar cliente_id si existe
+    if cliente_id:
+        user_response["cliente_id"] = cliente_id
+    
     return jsonify({
         "message": "Login exitoso",
-        "user": {
-            "id": usuario_dict["id"],
-            "email": usuario_dict["email"],
-            "nombre": usuario_dict["nombre"],
-            "apellido": usuario_dict["apellido"],
-            "rol": rol_frontend
-        },
-        "token": "fake-jwt-token-" + str(usuario_dict["id"])
+        "user": user_response,
+        "token": create_access_token(identity={
+            "id": usuario.id_usuarios,
+            "email": usuario.email_us,
+            "rol": rol_frontend,
+            "cliente_id": cliente_id
+        })
     }), 200
 
 
@@ -395,13 +490,52 @@ def logout():
 
 
 @admin_bp.route('/auth/me', methods=['GET'])
+@jwt_required()
 def get_current_user():
     """
-    Obtener usuario actual (requiere autenticación)
-    TODO: Implementar con JWT
+    Obtener usuario actual autenticado
+    Requiere token JWT válido en header Authorization: Bearer <token>
     """
-    # Placeholder - requiere JWT
-    return jsonify({"error": "Autenticación no implementada"}), 501
+    import json
+    current_user_identity = get_jwt_identity()
+    
+    # El identity ahora es un JSON string, deserializarlo
+    if isinstance(current_user_identity, str):
+        try:
+            current_user = json.loads(current_user_identity)
+        except json.JSONDecodeError:
+            current_user = {"id": current_user_identity}
+    else:
+        current_user = current_user_identity
+    
+    # Buscar datos frescos del usuario
+    usuario = Usuario.query.get(current_user['id'])
+    if not usuario:
+        return jsonify({"error": "Usuario no encontrado"}), 404
+    
+    if not usuario.activo:
+        return jsonify({"error": "Usuario inactivo"}), 403
+    
+    # Obtener cliente_id si existe
+    cliente = Cliente.query.filter_by(email_cliente=usuario.email_us).first()
+    
+    # Normalizar rol para frontend
+    rol_nombre = usuario.rol.nombre_rol.lower()
+    if "admin" in rol_nombre or "administrador" in rol_nombre:
+        rol_frontend = "admin"
+    elif "vendedor" in rol_nombre:
+        rol_frontend = "vendedor"
+    else:
+        rol_frontend = "cliente"
+    
+    return jsonify({
+        "id": usuario.id_usuarios,
+        "email": usuario.email_us,
+        "nombre": usuario.nombre_us,
+        "apellido": usuario.apellido_us,
+        "rol": rol_frontend,
+        "cliente_id": cliente.id_cliente if cliente else None
+    }), 200
 
 
 # ==============================================================================

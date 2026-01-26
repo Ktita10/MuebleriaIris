@@ -1,14 +1,15 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import ProductDetail from "../../components/catalog/ProductDetail";
-
-const API_BASE_URL = 'http://localhost:5000/api';
+import { API_BASE, API_BASE_URL, getImageUrl } from "../../lib/api";
 
 // Generate static paths for all products
 export async function getStaticPaths() {
+  // Note: For SSG, we need to use the env variable directly since imports may not work at build time
+  const apiUrl = import.meta.env.PUBLIC_API_BASE || 'http://localhost:5000';
   try {
     // Fetch all products from API during build
-    const response = await fetch(`${API_BASE_URL}/productos`);
+    const response = await fetch(`${apiUrl}/api/productos`);
     const productos = await response.json();
     
     return productos.map((producto: any) => ({
@@ -46,10 +47,10 @@ try {
       profundidad: productData.medidas?.profundidad || 0
     },
     colores: ['Estándar'], // TODO: Implement colors in backend
-    imagenes: productData.imagenes?.map((img: any) => `http://localhost:5000${img.url}`) || [],
+    imagenes: productData.imagenes?.map((img: any) => getImageUrl(img.url)) || [],
     stock: productData.stock || 0,
     sku: productData.sku,
-    imagen_principal: productData.imagen_principal ? `http://localhost:5000${productData.imagen_principal}` : null
+    imagen_principal: getImageUrl(productData.imagen_principal)
   };
   
   // If no images but has imagen_principal, use it
@@ -87,7 +88,7 @@ try {
       nombre: p.nombre,
       precio: p.precio,
       categoria: p.categoria,
-      imagen_principal: p.imagen_principal ? `http://localhost:5000${p.imagen_principal}` : null
+      imagen_principal: getImageUrl(p.imagen_principal)
     }));
 } catch (error) {
   console.error('Error fetching related products:', error);

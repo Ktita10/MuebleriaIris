@@ -120,7 +120,8 @@ export function InventarioManager() {
       // If removing stock, make the amount negative
       const cantidad = ajusteType === 'remove' ? -formData.cantidad : formData.cantidad;
 
-      await inventarioApi.ajustar(selectedInventario.id_producto, {
+      // Use inventario.id (id_inventario) not id_producto
+      await inventarioApi.ajustar(selectedInventario.id, {
         cantidad,
         razon: formData.razon,
       });
@@ -153,12 +154,12 @@ export function InventarioManager() {
 
   const getStockStatus = (inv: InventarioExtendido) => {
     if (inv.stock === 0) {
-      return { label: 'Sin Stock', color: 'bg-red-100 text-red-800' };
+      return { label: 'Sin Stock', color: 'badge-danger' };
     }
     if (inv.alerta_stock) {
-      return { label: 'Stock Bajo', color: 'bg-yellow-100 text-yellow-800' };
+      return { label: 'Stock Bajo', color: 'badge-warning' };
     }
-    return { label: 'Normal', color: 'bg-green-100 text-green-800' };
+    return { label: 'Normal', color: 'badge-success' };
   };
 
   if (loading) {
@@ -304,7 +305,7 @@ export function InventarioManager() {
                 {filteredInventario.map(inv => {
                   const status = getStockStatus(inv);
                   return (
-                    <tr key={inv.id_producto} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                    <tr key={inv.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           {inv.producto?.imagen_principal ? (
@@ -330,7 +331,7 @@ export function InventarioManager() {
                         <span className="text-sm text-gray-500 ml-1">unidades</span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${status.color}`}>
+                        <span className={status.color}>
                           {status.label}
                         </span>
                       </td>
@@ -338,7 +339,7 @@ export function InventarioManager() {
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => openAjusteModal(inv, 'add')}
-                            className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                            className="btn-action btn-action-success p-2"
                             title="Agregar stock"
                           >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -347,7 +348,7 @@ export function InventarioManager() {
                           </button>
                           <button
                             onClick={() => openAjusteModal(inv, 'remove')}
-                            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            className="btn-action btn-action-danger p-2"
                             title="Remover stock"
                             disabled={inv.stock === 0}
                           >
@@ -450,11 +451,11 @@ export function InventarioManager() {
                 <button
                   onClick={handleAjustar}
                   disabled={isSubmitting}
-                  className={`flex-1 px-4 py-2 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${
+                  className={`btn-action ${
                     ajusteType === 'add' 
-                      ? 'bg-green-600 hover:bg-green-700' 
-                      : 'bg-red-600 hover:bg-red-700'
-                  }`}
+                      ? 'btn-action-success' 
+                      : 'btn-action-danger'
+                  } flex-1 justify-center`}
                 >
                   {isSubmitting ? 'Procesando...' : `${ajusteType === 'add' ? 'Agregar' : 'Remover'} Stock`}
                 </button>
@@ -465,7 +466,7 @@ export function InventarioManager() {
                     setSelectedInventario(null);
                   }}
                   disabled={isSubmitting}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 transition-colors"
+                  className="btn-action btn-action-outline flex-1 justify-center"
                 >
                   Cancelar
                 </button>

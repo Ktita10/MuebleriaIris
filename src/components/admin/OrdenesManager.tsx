@@ -1,6 +1,17 @@
 "use client";
 import { useState, useEffect } from 'react';
-import { ordenesApi, type Orden, type OrdenDetalle } from '../../lib/api';
+import { useStore } from "@nanostores/react";
+import { $user } from "../../stores/auth";
+import { 
+  ordenesApi, 
+  clientesApi, 
+  productosApi,
+  getImageUrl,
+  type Orden, 
+  type OrdenDetalle, 
+  type Cliente, 
+  type Producto 
+} from '../../lib/api';
 import Modal from '../ui/Modal';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 import { ErrorAlert, SuccessAlert } from '../ui/Alerts';
@@ -9,10 +20,10 @@ import { LoadingSpinner } from '../ui/LoadingSpinner';
 const ESTADOS = ['pendiente', 'en_proceso', 'completada', 'cancelada'];
 
 const ESTADO_COLORS: { [key: string]: string } = {
-  pendiente: 'bg-yellow-100 text-yellow-800',
-  en_proceso: 'bg-blue-100 text-blue-800',
-  completada: 'bg-green-100 text-green-800',
-  cancelada: 'bg-red-100 text-red-800',
+  pendiente: 'badge-warning',
+  en_proceso: 'badge-primary',
+  completada: 'badge-success',
+  cancelada: 'badge-danger',
 };
 
 const ESTADO_LABELS: { [key: string]: string } = {
@@ -21,6 +32,244 @@ const ESTADO_LABELS: { [key: string]: string } = {
   completada: 'Completada',
   cancelada: 'Cancelada',
 };
+
+// --- Create Order Modal Component ---
+interface CreateOrderModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onOrderCreated: () => void;
+}
+
+function CreateOrderModal({ isOpen, onClose, onOrderCreated }: CreateOrderModalProps) {
+  const user = useStore($user);
+  const [step, setStep] = useState(1);
+  const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [productos, setProductos] = useState<Producto[]>([]);
+  const [loadingData, setLoadingData] = useState(false);
+  
+  const [selectedCliente, setSelectedCliente] = useState<number | null>(null);
+  const [cartItems, setCartItems] = useState<{product: Producto, quantity: number}[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      loadInitialData();
+      setStep(1);
+      setSelectedCliente(null);
+      setCartItems([]);
+      setError(null);
+    }
+  }, [isOpen]);
+
+  const loadInitialData = async () => {
+    setLoadingData(true);
+    try {
+      const [clientesData, productosData] = await Promise.all([
+        clientesApi.getAll(),
+        productosApi.getAll({ activo: true })
+      ]);
+      setClientes(clientesData);
+      setProductos(productosData);
+    } catch (err) {
+      setError("Error al cargar datos necesarios");
+    } finally {
+      setLoadingData(false);
+    }
+  };
+
+  const addToCart = (product: Producto) => {
+    const existing = cartItems.find(item => item.product.id === product.id);
+    if (existing) {
+      // Check stock limit (assuming product.stock is available or validated on backend)
+       // For now just increment
+       setCartItems(cartItems.map(item => 
+         item.product.id === product.id 
+           ? { ...item, quantity: item.quantity + 1 } 
+           : item
+       ));
+    } else {
+      setCartItems([...cartItems, { product, quantity: 1 }]);
+    }
+  };
+
+  const removeFromCart = (productId: number) => {
+    setCartItems(cartItems.filter(item => item.product.id !== productId));
+  };
+
+  const updateQuantity = (productId: number, newQty: number) => {
+    if (newQty < 1) return;
+    setCartItems(cartItems.map(item => 
+      item.product.id === productId ? { ...item, quantity: newQty } : item
+    ));
+  };
+
+  const handleSubmit = async () => {
+    if (!selectedCliente || cartItems.length === 0) return;
+
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      const orderData = {
+        id_cliente: selectedCliente,
+        id_vendedor: user?.id || 1, 
+        items: cartItems.map(item => ({
+          id_producto: item.product.id,
+          cantidad: item.quantity
+        }))
+      };
+
+      await ordenesApi.create(orderData);
+      onOrderCreated();
+      onClose();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error al crear la orden");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const total = cartItems.reduce((sum, item) => sum + (item.product.precio * item.quantity), 0);
+
+  if (!isOpen) return null;
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} title="Nueva Orden de Venta" size="xl">
+      <div className="space-y-6">
+        {loadingData ? (
+          <LoadingSpinner />
+        ) : (
+          <>
+            {error && <div className="p-3 bg-red-50 text-red-700 rounded-lg text-sm">{error}</div>}
+            
+            {/* Step 1: Select Client */}
+            <div className={step === 1 ? 'block' : 'hidden'}>
+               <h3 className="text-lg font-medium mb-4">1. Seleccionar Cliente</h3>
+               <div className="mb-4">
+                 <input 
+                   type="text" 
+                   placeholder="Buscar cliente..." 
+                   className="w-full px-4 py-2 border rounded-lg"
+                   onChange={(e) => {
+                     // Simple client filtering logic could be added here
+                   }}
+                 />
+               </div>
+               <div className="max-h-60 overflow-y-auto border rounded-lg divide-y">
+                 {clientes.map(cliente => (
+                   <div 
+                     key={cliente.id} 
+                     className={`p-3 cursor-pointer hover:bg-gray-50 flex justify-between items-center ${selectedCliente === cliente.id ? 'bg-blue-50 border-l-4 border-blue-500' : ''}`}
+                     onClick={() => setSelectedCliente(cliente.id)}
+                   >
+                     <div>
+                       <p className="font-medium">{cliente.nombre_cliente} {cliente.apellido_cliente}</p>
+                       <p className="text-sm text-gray-500">{cliente.dni_cuit}</p>
+                     </div>
+                     {selectedCliente === cliente.id && (
+                       <span className="text-blue-600 font-bold">Seleccionado</span>
+                     )}
+                   </div>
+                 ))}
+               </div>
+               <div className="mt-4 flex justify-end">
+                 <button 
+                   onClick={() => setStep(2)} 
+                   disabled={!selectedCliente}
+                   className="px-6 py-2 bg-blue-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                 >
+                   Siguiente: Agregar Productos
+                 </button>
+               </div>
+            </div>
+
+            {/* Step 2: Add Products */}
+            <div className={step === 2 ? 'block' : 'hidden'}>
+              <h3 className="text-lg font-medium mb-4">2. Agregar Productos</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Product List */}
+                <div className="border rounded-lg p-4">
+                  <h4 className="font-medium mb-3">Catálogo</h4>
+                  <div className="max-h-80 overflow-y-auto space-y-2">
+                    {productos.map(prod => (
+                      <div key={prod.id} className="flex justify-between items-center p-2 hover:bg-gray-50 border rounded">
+                        <div className="truncate flex-1 pr-2">
+                          <p className="font-medium truncate">{prod.nombre}</p>
+                          <p className="text-sm text-gray-500">${prod.precio}</p>
+                        </div>
+                        <button 
+                          onClick={() => addToCart(prod)}
+                          className="px-2 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200 text-sm"
+                        >
+                          + Agregar
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Cart */}
+                <div className="border rounded-lg p-4 bg-gray-50">
+                   <h4 className="font-medium mb-3">Carrito ({cartItems.length})</h4>
+                   {cartItems.length === 0 ? (
+                     <p className="text-gray-500 text-sm text-center py-8">No hay productos seleccionados</p>
+                   ) : (
+                     <div className="space-y-3 max-h-80 overflow-y-auto">
+                       {cartItems.map(item => (
+                         <div key={item.product.id} className="bg-white p-3 rounded shadow-sm">
+                           <div className="flex justify-between mb-2">
+                             <span className="font-medium text-sm">{item.product.nombre}</span>
+                             <button onClick={() => removeFromCart(item.product.id)} className="text-red-500 hover:text-red-700 text-xs">Eliminar</button>
+                           </div>
+                           <div className="flex justify-between items-center">
+                             <div className="flex items-center gap-2">
+                               <button onClick={() => updateQuantity(item.product.id, item.quantity - 1)} className="w-6 h-6 bg-gray-200 rounded text-center">-</button>
+                               <span className="w-8 text-center text-sm">{item.quantity}</span>
+                               <button onClick={() => updateQuantity(item.product.id, item.quantity + 1)} className="w-6 h-6 bg-gray-200 rounded text-center">+</button>
+                             </div>
+                             <span className="font-bold text-sm">
+                               ${(item.product.precio * item.quantity).toLocaleString()}
+                             </span>
+                           </div>
+                         </div>
+                       ))}
+                     </div>
+                   )}
+                   
+                   <div className="mt-4 pt-4 border-t flex justify-between items-center">
+                     <span className="font-bold">Total:</span>
+                     <span className="text-xl font-bold text-blue-600">${total.toLocaleString()}</span>
+                   </div>
+                </div>
+              </div>
+
+              <div className="mt-6 flex justify-between">
+                <button 
+                  onClick={() => setStep(1)}
+                  className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+                >
+                  Atrás
+                </button>
+                <button 
+                  onClick={handleSubmit}
+                  disabled={isSubmitting || cartItems.length === 0}
+                  className="px-6 py-2 bg-green-600 text-white rounded-lg disabled:opacity-50 hover:bg-green-700 flex items-center gap-2"
+                >
+                  {isSubmitting && <LoadingSpinner size="sm" color="text-white" />}
+                  Confirmar Orden
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    </Modal>
+  );
+}
+
+
+// --- Main Manager Component ---
 
 export function OrdenesManager() {
   const [ordenes, setOrdenes] = useState<Orden[]>([]);
@@ -34,6 +283,8 @@ export function OrdenesManager() {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
   const [selectedOrden, setSelectedOrden] = useState<Orden | null>(null);
   const [ordenDetalles, setOrdenDetalles] = useState<OrdenDetalle[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -190,6 +441,17 @@ export function OrdenesManager() {
           <h2 className="text-2xl font-bold text-gray-900">Gestión de Órdenes</h2>
           <p className="text-gray-500">{ordenes.length} órdenes en total</p>
         </div>
+        
+        {/* Nuevo botón para crear órdenes */}
+        <button
+          onClick={() => setIsCreateModalOpen(true)}
+          className="btn-action btn-action-success"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+          Nueva Orden
+        </button>
       </div>
 
       {/* Stats Cards */}
@@ -297,7 +559,7 @@ export function OrdenesManager() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
             </svg>
             <h3 className="mt-2 text-sm font-medium text-gray-900">No hay órdenes</h3>
-            <p className="mt-1 text-sm text-gray-500">Las órdenes se crean desde el flujo de ventas.</p>
+            <p className="mt-1 text-sm text-gray-500">Las órdenes se crean desde el flujo de ventas o utilizando el botón "Nueva Orden".</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -322,7 +584,7 @@ export function OrdenesManager() {
                     <td className="px-6 py-4 text-sm text-gray-600">{formatDate(orden.fecha_creacion)}</td>
                     <td className="px-6 py-4 text-sm font-semibold text-gray-900">{formatCurrency(orden.total)}</td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${ESTADO_COLORS[orden.estado]}`}>
+                      <span className={ESTADO_COLORS[orden.estado]}>
                         {ESTADO_LABELS[orden.estado]}
                       </span>
                     </td>
@@ -330,7 +592,7 @@ export function OrdenesManager() {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => openDetailsModal(orden)}
-                          className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          className="btn-action btn-action-primary p-2"
                           title="Ver detalles"
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -341,7 +603,7 @@ export function OrdenesManager() {
                         {orden.estado !== 'cancelada' && orden.estado !== 'completada' && (
                           <button
                             onClick={() => openStatusModal(orden)}
-                            className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            className="btn-action btn-action-warning p-2"
                             title="Cambiar estado"
                           >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -352,7 +614,7 @@ export function OrdenesManager() {
                         {orden.estado !== 'cancelada' && orden.estado !== 'completada' && (
                           <button
                             onClick={() => openCancelDialog(orden)}
-                            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            className="btn-action btn-action-danger p-2"
                             title="Cancelar orden"
                           >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -428,7 +690,7 @@ export function OrdenesManager() {
                         <div className="w-24 h-24 flex-shrink-0 bg-gray-100 rounded-xl overflow-hidden shadow-sm">
                           {detalle.producto.imagenes && detalle.producto.imagenes.length > 0 ? (
                             <img 
-                              src={`http://localhost:5000${detalle.producto.imagenes.find(img => img.imagen_principal)?.url || detalle.producto.imagenes[0].url}`}
+                              src={getImageUrl(detalle.producto.imagenes.find((img: { imagen_principal: boolean; url: string }) => img.imagen_principal)?.url || detalle.producto.imagenes[0].url)}
                               alt={detalle.producto.nombre}
                               className="w-full h-full object-cover"
                             />
@@ -543,14 +805,14 @@ export function OrdenesManager() {
                     setNewEstado('');
                   }}
                   disabled={isSubmitting}
-                  className="flex-1 px-5 py-2.5 text-sm font-semibold border-2 border-gray-300 text-gray-700 bg-white rounded-lg hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 transition-all shadow-sm"
+                  className="btn-action btn-action-outline flex-1 justify-center"
                 >
                   Cancelar
                 </button>
                 <button
                   onClick={handleUpdateEstado}
                   disabled={isSubmitting || !newEstado}
-                  className="flex-1 px-5 py-2.5 text-sm font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg"
+                  className="btn-action btn-action-primary flex-1 justify-center"
                 >
                   {isSubmitting ? (
                     <span className="flex items-center justify-center gap-2">
@@ -581,6 +843,16 @@ export function OrdenesManager() {
         confirmText="Cancelar Orden"
         variant="danger"
         isLoading={isSubmitting}
+      />
+
+      {/* Create Order Modal */}
+      <CreateOrderModal 
+        isOpen={isCreateModalOpen} 
+        onClose={() => setIsCreateModalOpen(false)} 
+        onOrderCreated={() => {
+          loadData();
+          setSuccess("Orden creada exitosamente");
+        }}
       />
     </div>
   );

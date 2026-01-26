@@ -62,12 +62,12 @@ export default function Modal({
           bg-white rounded-2xl shadow-xl
           transform transition-all
           animate-in fade-in zoom-in-95 duration-200
-          max-h-[90vh] overflow-y-auto
+          max-h-[90vh] flex flex-col
         `}
       >
-        {/* Header */}
+        {/* Header - sticky at top */}
         {title && (
-          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 flex-shrink-0">
             <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
             <button
               onClick={onClose}
@@ -91,8 +91,8 @@ export default function Modal({
           </div>
         )}
 
-        {/* Body */}
-        <div className="p-6">{children}</div>
+        {/* Body - scrollable content area */}
+        <div className="p-6 overflow-y-auto flex-1">{children}</div>
       </div>
     </div>
   );

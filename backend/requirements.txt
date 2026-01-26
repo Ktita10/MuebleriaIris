@@ -9,6 +9,7 @@ Flask-Mail==0.10.0
 # Database
 psycopg2-binary==2.9.10
 SQLAlchemy==2.0.36
+alembic==1.18.1
 
 # Environment
 python-dotenv==1.0.1

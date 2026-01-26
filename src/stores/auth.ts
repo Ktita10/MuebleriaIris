@@ -1,6 +1,7 @@
 // Auth store using nanostores for Astro
 // This allows auth state to be shared between React islands
 import { atom, computed } from "nanostores";
+import { authApi, API_BASE_URL } from "../lib/api";
 
 export interface User {
   id: number;
@@ -8,6 +9,7 @@ export interface User {
   nombre: string;
   apellido: string;
   rol: "admin" | "vendedor" | "cliente";
+  cliente_id?: number;
 }
 
 export interface AuthState {
@@ -15,6 +17,15 @@ export interface AuthState {
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+}
+
+/**
+ * Validate if a string is a valid JWT format (3 parts separated by dots)
+ */
+function isValidJwtFormat(token: string): boolean {
+  if (!token || typeof token !== 'string') return false;
+  const parts = token.split('.');
+  return parts.length === 3;
 }
 
 // Initialize auth from localStorage if available
@@ -25,6 +36,15 @@ function getInitialAuth(): { user: User | null; token: string | null } {
   try {
     const storedUser = localStorage.getItem("muebleria-user");
     const storedToken = localStorage.getItem("muebleria-token");
+    
+    // Validate JWT format - clean up old fake tokens
+    if (storedToken && !isValidJwtFormat(storedToken)) {
+      console.warn("Invalid JWT format detected, cleaning auth data");
+      localStorage.removeItem("muebleria-user");
+      localStorage.removeItem("muebleria-token");
+      return { user: null, token: null };
+    }
+    
     return {
       user: storedUser ? JSON.parse(storedUser) : null,
       token: storedToken || null,
@@ -61,6 +81,14 @@ if (typeof window !== "undefined") {
       localStorage.removeItem("muebleria-token");
     }
   });
+  
+  // Verify token on page load (if token exists and has valid format)
+  if (initial.token && isValidJwtFormat(initial.token)) {
+    verifyToken().catch(() => {
+      // Token invalid or expired, clear auth
+      logout();
+    });
+  }
 }
 
 // Computed values
@@ -79,30 +107,22 @@ export const $isVendedor = computed(
   (user) => user?.rol === "vendedor" || user?.rol === "admin"
 );
 
-// API base URL
-const API_URL = "http://localhost:5000/api";
-
-// Auth actions
+// Auth actions using centralized API client
 export async function login(email: string, password: string): Promise<{ success: boolean; error?: string }> {
   $isLoading.set(true);
   
   try {
-    const response = await fetch(`${API_URL}/auth/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
+    const data = await authApi.login({ email, password });
+
+    // Set user and token (API returns 'user' with cliente_id)
+    $user.set({
+      id: data.user.id,
+      email: data.user.email,
+      nombre: data.user.nombre,
+      apellido: data.user.apellido,
+      rol: data.user.rol as "admin" | "vendedor" | "cliente",
+      cliente_id: data.user.cliente_id,
     });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || "Error al iniciar sesion");
-    }
-
-    // Set user and token
-    $user.set(data.user);
     $token.set(data.token);
 
     return { success: true };
@@ -123,22 +143,17 @@ export async function register(userData: {
   $isLoading.set(true);
 
   try {
-    const response = await fetch(`${API_URL}/auth/register`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(userData),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || "Error al registrar usuario");
-    }
+    const data = await authApi.register(userData);
 
     // Auto login after registration
-    $user.set(data.user);
+    $user.set({
+      id: data.user.id,
+      email: data.user.email,
+      nombre: data.user.nombre,
+      apellido: data.user.apellido,
+      rol: data.user.rol as "admin" | "vendedor" | "cliente",
+      cliente_id: data.user.cliente_id,
+    });
     $token.set(data.token);
 
     return { success: true };
@@ -157,6 +172,35 @@ export function logout() {
   // Redirect to home
   if (typeof window !== "undefined") {
     window.location.href = "/";
+  }
+}
+
+/**
+ * Verify current token with backend /auth/me endpoint
+ * Updates user data if valid, logs out if invalid
+ */
+export async function verifyToken(): Promise<boolean> {
+  const token = $token.get();
+  if (!token) return false;
+  
+  try {
+    const userData = await authApi.me();
+    
+    // Update user data with fresh data from server
+    $user.set({
+      id: userData.id,
+      email: userData.email,
+      nombre: userData.nombre,
+      apellido: userData.apellido,
+      rol: userData.rol as "admin" | "vendedor" | "cliente",
+      cliente_id: userData.cliente_id ?? undefined,
+    });
+    
+    return true;
+  } catch (error) {
+    // Token invalid or expired
+    console.error("Token verification failed:", error);
+    return false;
   }
 }
 

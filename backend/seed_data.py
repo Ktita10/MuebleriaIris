@@ -13,7 +13,7 @@ from app.models import (
     Usuario, Rol, Cliente, Categoria, Producto, 
     Proveedor, Inventario, Orden, DetalleOrden
 )
-from werkzeug.security import generate_password_hash
+from app.security import hash_password
 from datetime import datetime, timedelta
 import random
 
@@ -36,9 +36,9 @@ def seed_database():
         
         print("👥 Creando roles...")
         roles = {
-            'admin': Rol(nombre='Administrador', descripcion='Acceso total al sistema'),
-            'vendedor': Rol(nombre='Vendedor', descripcion='Gestión de ventas y clientes'),
-            'inventario': Rol(nombre='Inventario', descripcion='Gestión de stock y productos'),
+            'admin': Rol(nombre_rol='Administrador', descripcion='Acceso total al sistema'),
+            'vendedor': Rol(nombre_rol='Vendedor', descripcion='Gestión de ventas y clientes'),
+            'inventario': Rol(nombre_rol='Inventario', descripcion='Gestión de stock y productos'),
         }
         for rol in roles.values():
             db.session.add(rol)
@@ -51,32 +51,32 @@ def seed_database():
                 nombre_us='Juan',
                 apellido_us='Pérez',
                 email_us='admin@muebleria.com',
-                password_hash=generate_password_hash('admin123'),
-                id_rol=roles['admin'].id,
+                password_hash=hash_password('admin123'),
+                id_rol=roles['admin'].id_rol,
                 activo=True
             ),
             Usuario(
                 nombre_us='María',
                 apellido_us='González',
                 email_us='maria@muebleria.com',
-                password_hash=generate_password_hash('vendedor123'),
-                id_rol=roles['vendedor'].id,
+                password_hash=hash_password('vendedor123'),
+                id_rol=roles['vendedor'].id_rol,
                 activo=True
             ),
             Usuario(
                 nombre_us='Carlos',
                 apellido_us='Rodríguez',
                 email_us='carlos@muebleria.com',
-                password_hash=generate_password_hash('vendedor123'),
-                id_rol=roles['vendedor'].id,
+                password_hash=hash_password('vendedor123'),
+                id_rol=roles['vendedor'].id_rol,
                 activo=True
             ),
             Usuario(
                 nombre_us='Ana',
                 apellido_us='Martínez',
                 email_us='ana@muebleria.com',
-                password_hash=generate_password_hash('inventario123'),
-                id_rol=roles['inventario'].id,
+                password_hash=hash_password('inventario123'),
+                id_rol=roles['inventario'].id_rol,
                 activo=True
             ),
         ]
@@ -148,95 +148,95 @@ def seed_database():
                 sku='SOF-001', nombre='Sofá Moderno 3 Cuerpos',
                 descripcion='Sofá moderno de 3 cuerpos con tapizado en tela premium',
                 precio=450000, alto_cm=85, ancho_cm=210, profundidad_cm=90,
-                material='Tela premium', id_categoria=categorias['sofas'].id
+                material='Tela premium', id_categoria=categorias['sofas'].id_categoria
             ),
             Producto(
                 sku='SOF-002', nombre='Sofá Esquinero L',
                 descripcion='Sofá esquinero en forma de L con respaldo reclinable',
                 precio=680000, alto_cm=90, ancho_cm=280, profundidad_cm=200,
-                material='Cuero sintético', id_categoria=categorias['sofas'].id
+                material='Cuero sintético', id_categoria=categorias['sofas'].id_categoria
             ),
             Producto(
                 sku='SOF-003', nombre='Sofá 2 Cuerpos Nórdico',
                 descripcion='Sofá de 2 cuerpos estilo nórdico minimalista',
                 precio=320000, alto_cm=80, ancho_cm=160, profundidad_cm=85,
-                material='Lino natural', id_categoria=categorias['sofas'].id
+                material='Lino natural', id_categoria=categorias['sofas'].id_categoria
             ),
             # Mesas
             Producto(
                 sku='MES-001', nombre='Mesa de Comedor Nórdica',
                 descripcion='Mesa de comedor extensible para 6-8 personas',
                 precio=280000, alto_cm=75, ancho_cm=180, profundidad_cm=90,
-                material='Madera de roble', id_categoria=categorias['mesas'].id
+                material='Madera de roble', id_categoria=categorias['mesas'].id_categoria
             ),
             Producto(
                 sku='MES-002', nombre='Mesa Ratona Circular',
                 descripcion='Mesa ratona circular con tapa de vidrio',
                 precio=95000, alto_cm=45, ancho_cm=90, profundidad_cm=90,
-                material='Madera y vidrio', id_categoria=categorias['mesas'].id
+                material='Madera y vidrio', id_categoria=categorias['mesas'].id_categoria
             ),
             Producto(
                 sku='MES-003', nombre='Mesa de Trabajo Home Office',
                 descripcion='Mesa de trabajo con cajones laterales',
                 precio=185000, alto_cm=75, ancho_cm=140, profundidad_cm=70,
-                material='MDF laqueado', id_categoria=categorias['mesas'].id
+                material='MDF laqueado', id_categoria=categorias['mesas'].id_categoria
             ),
             # Sillas
             Producto(
                 sku='SIL-001', nombre='Silla Ergonómica Office',
                 descripcion='Silla ergonómica con soporte lumbar ajustable',
                 precio=185000, alto_cm=110, ancho_cm=60, profundidad_cm=60,
-                material='Malla transpirable', id_categoria=categorias['sillas'].id
+                material='Malla transpirable', id_categoria=categorias['sillas'].id_categoria
             ),
             Producto(
                 sku='SIL-002', nombre='Silla de Comedor Pack x4',
                 descripcion='Set de 4 sillas de comedor con respaldo alto',
                 precio=240000, alto_cm=95, ancho_cm=45, profundidad_cm=50,
-                material='Madera y tela', id_categoria=categorias['sillas'].id
+                material='Madera y tela', id_categoria=categorias['sillas'].id_categoria
             ),
             Producto(
                 sku='SIL-003', nombre='Silla Gaming Pro',
                 descripcion='Silla gamer profesional con reposabrazos 4D',
                 precio=320000, alto_cm=130, ancho_cm=70, profundidad_cm=65,
-                material='Cuero y metal', id_categoria=categorias['sillas'].id
+                material='Cuero y metal', id_categoria=categorias['sillas'].id_categoria
             ),
             # Camas
             Producto(
                 sku='CAM-001', nombre='Cama Queen con Respaldo',
                 descripcion='Cama Queen size con respaldo tapizado',
                 precio=520000, alto_cm=110, ancho_cm=160, profundidad_cm=200,
-                material='Madera maciza', id_categoria=categorias['camas'].id
+                material='Madera maciza', id_categoria=categorias['camas'].id_categoria
             ),
             Producto(
                 sku='CAM-002', nombre='Cama King Size Premium',
                 descripcion='Cama King size con base reforzada',
                 precio=780000, alto_cm=120, ancho_cm=180, profundidad_cm=200,
-                material='Roble americano', id_categoria=categorias['camas'].id
+                material='Roble americano', id_categoria=categorias['camas'].id_categoria
             ),
             Producto(
                 sku='CAM-003', nombre='Cama 1 Plaza Juvenil',
                 descripcion='Cama individual con cajones inferiores',
                 precio=280000, alto_cm=90, ancho_cm=90, profundidad_cm=190,
-                material='Pino laqueado', id_categoria=categorias['camas'].id
+                material='Pino laqueado', id_categoria=categorias['camas'].id_categoria
             ),
             # Estanterías
             Producto(
                 sku='EST-001', nombre='Biblioteca 5 Estantes',
                 descripcion='Biblioteca modular de 5 estantes regulables',
                 precio=145000, alto_cm=180, ancho_cm=80, profundidad_cm=30,
-                material='MDF melamínico', id_categoria=categorias['estanterias'].id
+                material='MDF melamínico', id_categoria=categorias['estanterias'].id_categoria
             ),
             Producto(
                 sku='EST-002', nombre='Estante Flotante Pack x3',
                 descripcion='Set de 3 estantes flotantes de pared',
                 precio=65000, alto_cm=4, ancho_cm=80, profundidad_cm=25,
-                material='Madera natural', id_categoria=categorias['estanterias'].id
+                material='Madera natural', id_categoria=categorias['estanterias'].id_categoria
             ),
             Producto(
                 sku='EST-003', nombre='Modular TV 180cm',
                 descripcion='Mueble modular para TV con cajones y estantes',
                 precio=320000, alto_cm=60, ancho_cm=180, profundidad_cm=45,
-                material='Roble y metal', id_categoria=categorias['estanterias'].id
+                material='Roble y metal', id_categoria=categorias['estanterias'].id_categoria
             ),
         ]
         for producto in productos:
@@ -280,8 +280,8 @@ def seed_database():
         for producto in productos:
             stock_inicial = random.randint(5, 50)
             inventario = Inventario(
-                id_producto=producto.id,
-                cantidad=stock_inicial,
+                id_producto=producto.id_producto,
+                cantidad_stock=stock_inicial,
                 stock_minimo=5,
                 ubicacion=f'Depósito {random.choice(["A", "B", "C"])}-{random.randint(1, 20)}'
             )
@@ -298,10 +298,11 @@ def seed_database():
             fecha = datetime.now() - timedelta(days=dias_atras)
             
             orden = Orden(
-                id_cliente=random.choice(clientes).id,
-                id_usuarios=random.choice(usuarios).id,
+                id_cliente=random.choice(clientes).id_cliente,
+                id_usuarios=random.choice(usuarios).id_usuarios,
                 fecha_creacion=fecha,
-                estado=random.choice(estados)
+                estado=random.choice(estados),
+                monto_total=0.0  # Inicializar en 0
             )
             db.session.add(orden)
             db.session.flush()  # Get orden.id
@@ -310,15 +311,21 @@ def seed_database():
             num_productos = random.randint(1, 4)
             productos_orden = random.sample(productos, num_productos)
             
+            monto_orden = 0.0
             for producto in productos_orden:
                 cantidad = random.randint(1, 3)
                 detalle = DetalleOrden(
-                    id_orden=orden.id,
-                    id_producto=producto.id,
+                    id_orden=orden.id_orden,
+                    id_producto=producto.id_producto,
                     cantidad=cantidad,
                     precio_unitario=producto.precio
                 )
                 db.session.add(detalle)
+                # Acumular el monto total
+                monto_orden += float(producto.precio) * cantidad
+            
+            # Actualizar el monto total de la orden
+            orden.monto_total = monto_orden
         
         db.session.commit()
         print(f"✅ 10 órdenes con detalles creadas")

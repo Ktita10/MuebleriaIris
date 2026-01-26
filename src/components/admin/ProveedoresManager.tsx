@@ -222,7 +222,7 @@ export function ProveedoresManager() {
         </div>
         <button
           onClick={openCreateModal}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors"
+          className="btn-action btn-action-primary"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -287,7 +287,7 @@ export function ProveedoresManager() {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => openEditModal(proveedor)}
-                          className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          className="btn-action btn-action-primary"
                           title="Editar"
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -296,7 +296,7 @@ export function ProveedoresManager() {
                         </button>
                         <button
                           onClick={() => openDeleteDialog(proveedor)}
-                          className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          className="btn-action btn-action-danger"
                           title="Eliminar"
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -410,7 +410,7 @@ export function ProveedoresManager() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="btn-action btn-action-primary flex-1"
             >
               {isSubmitting ? 'Creando...' : 'Crear Proveedor'}
             </button>
@@ -421,7 +421,7 @@ export function ProveedoresManager() {
                 resetForm();
               }}
               disabled={isSubmitting}
-              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 transition-colors"
+              className="btn-action btn-action-outline flex-1"
             >
               Cancelar
             </button>
@@ -526,7 +526,7 @@ export function ProveedoresManager() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="btn-action btn-action-primary flex-1"
             >
               {isSubmitting ? 'Guardando...' : 'Guardar Cambios'}
             </button>
@@ -537,7 +537,7 @@ export function ProveedoresManager() {
                 resetForm();
               }}
               disabled={isSubmitting}
-              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 transition-colors"
+              className="btn-action btn-action-outline flex-1"
             >
               Cancelar
             </button>

@@ -14,7 +14,12 @@
 from . import db
 
 # Importa datetime para manejar fechas y horas
-from datetime import datetime
+from datetime import datetime, timezone
+
+
+def utc_now():
+    """Retorna datetime actual en UTC (reemplaza datetime.utcnow deprecated)."""
+    return datetime.now(timezone.utc)
 
 # ==========================================
 # 1. SISTEMA DE USUARIOS Y ROLES
@@ -41,8 +46,8 @@ class Usuario(db.Model):
     password_hash = db.Column(db.String(200), nullable=False)
     id_rol = db.Column(db.Integer, db.ForeignKey("roles.id_rol"))  # FK a Rol
     activo = db.Column(db.Boolean, default=True)
-    fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow)
-    fecha_actualizacion = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    fecha_creacion = db.Column(db.DateTime, default=utc_now)
+    fecha_actualizacion = db.Column(db.DateTime, default=utc_now, onupdate=utc_now)
     ordenes = db.relationship("Orden", backref="vendedor", lazy=True)  # Un vendedor tiene muchas ordenes
     def to_dict(self):
         return {
@@ -90,7 +95,8 @@ class Producto(db.Model):
     profundidad_cm = db.Column(db.Numeric(5, 2))
     material = db.Column(db.String(100), nullable=False)
     id_categoria = db.Column(db.Integer, db.ForeignKey("categoria.id_categoria"))  # FK a Categoria
-    fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow)
+    activo = db.Column(db.Boolean, default=True)  # Si el producto está activo/disponible
+    fecha_creacion = db.Column(db.DateTime, default=utc_now)
     imagenes = db.relationship("ImagenProducto", backref="producto", lazy=True, cascade="all, delete-orphan")  # Un producto tiene muchas imágenes
     inventario = db.relationship("Inventario", backref="producto", uselist=False, lazy=True)  # Un producto tiene un inventario (uno a uno)
     detalles_orden = db.relationship("DetalleOrden", backref="producto", lazy=True)  # Un producto puede estar en muchos detalles de orden
@@ -120,6 +126,7 @@ class Producto(db.Model):
             "material": self.material,
             "categoria": self.categoria.nombre if self.categoria else None,
             "id_categoria": self.id_categoria,
+            "activo": self.activo,
             "fecha_creacion": self.fecha_creacion.isoformat() if self.fecha_creacion else None,
             "imagen_principal": imagen_principal,
             "imagenes": [img.to_dict() for img in self.imagenes] if self.imagenes else [],
@@ -184,15 +191,19 @@ class Inventario(db.Model):
     cantidad_stock = db.Column(db.Integer, default=0, nullable=False)
     ubicacion = db.Column(db.String(100))
     stock_minimo = db.Column(db.Integer, default=5)
-    utlima_actualizacion = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    # NOTA: El nombre de columna en BD tiene typo 'utlima_actualizacion' (debería ser 'ultima_actualizacion')
+    # Se mantiene para compatibilidad con esquema existente
+    utlima_actualizacion = db.Column(db.DateTime, default=utc_now, onupdate=utc_now)
     
     def to_dict(self):
         return {
             "id": self.id_inventario,
             "id_producto": self.id_producto,
-            "cantidad": self.cantidad_stock,
-            "ubicacion": self.ubicacion,
+            "stock": self.cantidad_stock,  # Frontend expects 'stock'
+            "cantidad": self.cantidad_stock,  # Keep for backwards compatibility
+            "ubicacion": self.ubicacion or "",
             "stock_minimo": self.stock_minimo,
+            "alerta_stock": self.cantidad_stock <= self.stock_minimo,  # Computed field
             "fecha_actualizacion": self.utlima_actualizacion.isoformat() if self.utlima_actualizacion else None
         }
 
@@ -214,7 +225,7 @@ class Cliente(db.Model):
     ciudad_cliente = db.Column(db.String(100), nullable=False)
     codigo_postal = db.Column(db.String(20), nullable=False)
     provincia_cliente = db.Column(db.String(20), nullable=False)
-    fecha_registro = db.Column(db.DateTime, default=datetime.utcnow)
+    fecha_registro = db.Column(db.DateTime, default=utc_now)
     ordenes = db.relationship("Orden", backref="cliente", lazy=True)  # Un cliente tiene muchas órdenes
     
     def to_dict(self):
@@ -243,7 +254,7 @@ class Orden(db.Model):
     id_orden = db.Column(db.Integer, primary_key=True)
     id_cliente = db.Column(db.Integer, db.ForeignKey("clientes.id_cliente"))  # FK a Cliente
     id_usuarios = db.Column(db.Integer, db.ForeignKey("usuarios.id_usuarios"))  # FK a Usuario (vendedor)
-    fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow)
+    fecha_creacion = db.Column(db.DateTime, default=utc_now)
     estado = db.Column(db.String(50), default="pendiente")  # pendiente, confirmada, enviada, completada, cancelada
     monto_total = db.Column(db.Numeric(10, 2), default=0.0)
     detalles = db.relationship("DetalleOrden", backref="orden", lazy=True, cascade="all, delete-orphan")  # Una orden tiene muchos detalles
@@ -296,7 +307,7 @@ class Pago(db.Model):
     mp_estado = db.Column(db.String(50))  # Estado del pago en MercadoPago (approved, pending, rejected, etc.)
     mp_tipo_pago = db.Column(db.String(50))  # Tipo de pago (credit_card, debit_card, ticket, etc.)
     monto_cobrado_mp = db.Column(db.Numeric(10, 2))  # Monto cobrado por MercadoPago
-    fecha_pago = db.Column(db.DateTime, default=datetime.utcnow)
+    fecha_pago = db.Column(db.DateTime, default=utc_now)
     
     def to_dict(self):
         return {
@@ -336,5 +347,28 @@ Flujo principal CRM/ERP:
 
 Cada método `.to_dict()` permite serializar el modelo a formato JSON para enviarlo por API o consumirlo en el frontend.
 '''
+
+# ===========================================
+# 8. FAVORITOS
+# ===========================================
+
+class Favorito(db.Model):
+    __tablename__ = "favoritos"
+    id_favorito = db.Column(db.Integer, primary_key=True)
+    id_cliente = db.Column(db.Integer, db.ForeignKey("clientes.id_cliente"), nullable=False)
+    id_producto = db.Column(db.Integer, db.ForeignKey("productos.id_producto"), nullable=False)
+    fecha_agregado = db.Column(db.DateTime, default=utc_now)
+
+    cliente = db.relationship("Cliente", backref="favoritos", lazy=True)
+    producto = db.relationship("Producto", backref="favoritos", lazy=True)
+
+    def to_dict(self):
+        return {
+            "id": self.id_favorito,
+            "id_cliente": self.id_cliente,
+            "id_producto": self.id_producto,
+            "fecha_agregado": self.fecha_agregado.isoformat() if self.fecha_agregado else None,
+            "producto": self.producto.to_dict() if self.producto else None
+        }
 
 # --- Fin de models.py ---

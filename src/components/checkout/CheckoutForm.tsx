@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useStore } from "@nanostores/react";
 import { $cartItems, $cartTotal, clearCart } from "../../stores/cart";
+import { $user, $isAuthenticated, $token } from "../../stores/auth";
+import { ordenesApi } from "../../lib/api";
 import Button from "../ui/Button";
 import Input from "../ui/Input";
 import Select from "../ui/Select";
@@ -58,6 +60,8 @@ const provinces = [
 export default function CheckoutForm() {
   const items = useStore($cartItems);
   const total = useStore($cartTotal);
+  const user = useStore($user);
+  const isAuthenticated = useStore($isAuthenticated);
   
   const [formData, setFormData] = useState<FormData>({
     email: "",
@@ -142,46 +146,32 @@ export default function CheckoutForm() {
     e.preventDefault();
 
     if (!validate()) return;
+    
+    // Double-check authentication
+    if (!user || !user.cliente_id) {
+      setErrors({ submit: "Error de autenticacion. Por favor, inicia sesion nuevamente." });
+      return;
+    }
 
     setIsSubmitting(true);
 
     try {
-      // Simulate API call - Replace with actual API integration
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      // Create order payload
-      const orderPayload = {
-        customer: {
-          email: formData.email,
-          phone: formData.phone,
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-        },
-        shipping: {
-          address: formData.address,
-          addressNumber: formData.addressNumber,
-          apartment: formData.apartment,
-          city: formData.city,
-          province: formData.province,
-          postalCode: formData.postalCode,
-        },
-        items: items.map((item) => ({
-          productId: item.id,
-          nombre: item.nombre,
-          precio: item.precio,
+      // Create order using the real API
+      const ordenData = {
+        id_cliente: user.cliente_id,
+        id_usuarios: user.id, // The logged-in user who is placing the order
+        productos: items.map((item) => ({
+          id_producto: item.id,
           cantidad: item.cantidad,
-          color: item.color,
         })),
-        total,
-        paymentMethod: formData.paymentMethod,
-        notes: formData.notes,
+        // Additional data for shipping (stored as notes or future shipping table)
+        notas: formData.notes ? `${formData.notes} | Envio: ${formData.address} ${formData.addressNumber}${formData.apartment ? `, ${formData.apartment}` : ''}, ${formData.city}, ${formData.province} (${formData.postalCode})` : undefined,
       };
 
-      console.log("Order payload:", orderPayload);
+      const orden = await ordenesApi.create(ordenData);
 
-      // Generate fake order ID
-      const fakeOrderId = `ORD-${Date.now().toString(36).toUpperCase()}`;
-      setOrderId(fakeOrderId);
+      // Store the real order ID
+      setOrderId(`ORD-${orden.id}`);
       
       // Clear cart
       clearCart();
@@ -190,7 +180,8 @@ export default function CheckoutForm() {
       setStep("success");
     } catch (error) {
       console.error("Error submitting order:", error);
-      setErrors({ submit: "Error al procesar el pedido. Intenta nuevamente." });
+      const message = error instanceof Error ? error.message : "Error al procesar el pedido";
+      setErrors({ submit: `${message}. Intenta nuevamente.` });
     } finally {
       setIsSubmitting(false);
     }
@@ -240,6 +231,47 @@ export default function CheckoutForm() {
             className="inline-flex items-center justify-center px-6 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-xl hover:border-primary-600 hover:text-primary-600 transition-colors"
           >
             Seguir comprando
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  // Require authentication to checkout
+  if (!isAuthenticated || !user) {
+    return (
+      <div className="bg-white rounded-2xl p-8 text-center">
+        <svg
+          className="w-16 h-16 mx-auto text-primary-400 mb-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.5}
+            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+          />
+        </svg>
+        <h2 className="text-xl font-bold text-gray-900 mb-2">
+          Inicia sesion para continuar
+        </h2>
+        <p className="text-gray-600 mb-6">
+          Necesitas una cuenta para completar tu compra y hacer seguimiento de tus pedidos.
+        </p>
+        <div className="flex gap-4 justify-center">
+          <a
+            href="/login?redirect=/checkout"
+            className="inline-flex items-center justify-center px-6 py-3 bg-primary-600 text-white font-semibold rounded-xl hover:bg-primary-700 transition-colors"
+          >
+            Iniciar Sesion
+          </a>
+          <a
+            href="/registro?redirect=/checkout"
+            className="inline-flex items-center justify-center px-6 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-xl hover:border-primary-600 hover:text-primary-600 transition-colors"
+          >
+            Crear Cuenta
           </a>
         </div>
       </div>

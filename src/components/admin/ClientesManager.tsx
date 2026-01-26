@@ -159,15 +159,15 @@ export function ClientesManager() {
     // Load full client data from API
     clientesApi.getById(cliente.id).then(fullCliente => {
       setFormData({
-        nombre_cliente: fullCliente.nombre_cliente,
-        apellido_cliente: fullCliente.apellido_cliente,
+        nombre_cliente: fullCliente.nombre,
+        apellido_cliente: fullCliente.apellido,
         dni_cuit: fullCliente.dni_cuit,
-        email_cliente: fullCliente.email_cliente,
+        email_cliente: fullCliente.email,
         telefono: fullCliente.telefono,
-        direccion_cliente: fullCliente.direccion_cliente,
-        ciudad_cliente: fullCliente.ciudad_cliente,
+        direccion_cliente: fullCliente.direccion,
+        ciudad_cliente: fullCliente.ciudad,
         codigo_postal: fullCliente.codigo_postal,
-        provincia_cliente: fullCliente.provincia_cliente,
+        provincia_cliente: fullCliente.provincia,
       });
     });
     setFormErrors({});
@@ -185,8 +185,8 @@ export function ClientesManager() {
   };
 
   const filteredClientes = clientes.filter(cliente =>
-    `${cliente.nombre_cliente} ${cliente.apellido_cliente}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    cliente.email_cliente.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    `${cliente.nombre} ${cliente.apellido}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    cliente.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
     cliente.dni_cuit.includes(searchTerm)
   );
 
@@ -209,7 +209,7 @@ export function ClientesManager() {
         </div>
         <button
           onClick={openCreateModal}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="btn-action btn-action-primary"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -248,16 +248,16 @@ export function ClientesManager() {
             {filteredClientes.map((cliente) => (
               <tr key={cliente.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">{cliente.nombre_cliente} {cliente.apellido_cliente}</div>
+                  <div className="text-sm font-medium text-gray-900">{cliente.nombre} {cliente.apellido}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{cliente.dni_cuit}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{cliente.email_cliente}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{cliente.ciudad_cliente}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{cliente.email}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{cliente.ciudad}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div className="flex items-center justify-end gap-2">
                     <button
                       onClick={() => openEditModal(cliente)}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors shadow-sm"
+                      className="btn-action btn-action-primary"
                       title="Editar cliente"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -267,7 +267,7 @@ export function ClientesManager() {
                     </button>
                     <button
                       onClick={() => openDeleteDialog(cliente)}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors shadow-sm"
+                      className="btn-action btn-action-danger"
                       title="Eliminar cliente"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -460,14 +460,14 @@ export function ClientesManager() {
                 setIsEditModalOpen(false);
               }}
               disabled={isSubmitting}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+              className="btn-action btn-action-outline"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              className="btn-action btn-action-primary"
             >
               {isSubmitting ? 'Guardando...' : isCreateModalOpen ? 'Crear Cliente' : 'Guardar Cambios'}
             </button>
@@ -481,7 +481,7 @@ export function ClientesManager() {
         onClose={() => setIsDeleteDialogOpen(false)}
         onConfirm={handleDelete}
         title="¿Eliminar cliente?"
-        message={`¿Estás seguro de que deseas eliminar a ${selectedCliente?.nombre_cliente} ${selectedCliente?.apellido_cliente}? Esta acción no se puede deshacer.`}
+        message={`¿Estás seguro de que deseas eliminar a ${selectedCliente?.nombre} ${selectedCliente?.apellido}? Esta acción no se puede deshacer.`}
         confirmText="Eliminar"
         cancelText="Cancelar"
         variant="danger"

@@ -10,7 +10,7 @@ interface FormErrors {
   nombre_us?: string;
   apellido_us?: string;
   email_us?: string;
-  password_hash?: string;
+  password?: string;
   id_rol?: string;
 }
 
@@ -35,7 +35,7 @@ export function UsuariosManager() {
     nombre_us: '',
     apellido_us: '',
     email_us: '',
-    password_hash: '',
+    password: '',
     id_rol: 0,
     activo: true,
   });
@@ -106,10 +106,10 @@ export function UsuariosManager() {
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email_us)) {
       errors.email_us = 'Email inválido';
     }
-    if (!selectedUsuario && !formData.password_hash.trim()) {
-      errors.password_hash = 'La contraseña es requerida';
-    } else if (!selectedUsuario && formData.password_hash.length < 6) {
-      errors.password_hash = 'La contraseña debe tener al menos 6 caracteres';
+    if (!selectedUsuario && !formData.password?.trim()) {
+      errors.password = 'La contraseña es requerida';
+    } else if (!selectedUsuario && (formData.password?.length || 0) < 6) {
+      errors.password = 'La contraseña debe tener al menos 6 caracteres';
     }
     if (!formData.id_rol || formData.id_rol === 0) {
       errors.id_rol = 'Debe seleccionar un rol';
@@ -222,7 +222,7 @@ export function UsuariosManager() {
       nombre_us: usuario.nombre,
       apellido_us: usuario.apellido,
       email_us: usuario.email,
-      password_hash: '', // Don't pre-fill password
+      password: '', // Don't pre-fill password
       id_rol: rol?.id || 0,
       activo: usuario.activo,
     });
@@ -247,7 +247,7 @@ export function UsuariosManager() {
       nombre_us: '',
       apellido_us: '',
       email_us: '',
-      password_hash: '',
+      password: '',
       id_rol: 0,
       activo: true,
     });
@@ -277,7 +277,7 @@ export function UsuariosManager() {
         </div>
         <button
           onClick={openCreateModal}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors"
+          className="btn-action btn-action-primary"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -346,12 +346,12 @@ export function UsuariosManager() {
                     <td className="px-6 py-4 text-sm text-gray-900 font-medium">{usuario.apellido}</td>
                     <td className="px-6 py-4 text-sm text-gray-600">{usuario.email}</td>
                     <td className="px-6 py-4">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      <span className="badge-primary">
                         {usuario.rol}
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${usuario.activo ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                      <span className={usuario.activo ? 'badge-success' : 'badge-secondary'}>
                         {usuario.activo ? 'Activo' : 'Inactivo'}
                       </span>
                     </td>
@@ -359,7 +359,7 @@ export function UsuariosManager() {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => openEditModal(usuario)}
-                          className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          className="btn-action btn-action-primary p-2"
                           title="Editar"
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -368,7 +368,7 @@ export function UsuariosManager() {
                         </button>
                         <button
                           onClick={() => openPasswordModal(usuario)}
-                          className="p-2 text-gray-400 hover:text-yellow-600 hover:bg-yellow-50 rounded-lg transition-colors"
+                          className="btn-action btn-action-warning p-2"
                           title="Cambiar contraseña"
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -377,7 +377,7 @@ export function UsuariosManager() {
                         </button>
                         <button
                           onClick={() => openDeleteDialog(usuario)}
-                          className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          className="btn-action btn-action-danger p-2"
                           title="Eliminar"
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -494,7 +494,7 @@ export function UsuariosManager() {
             <button
               onClick={handleCreate}
               disabled={isSubmitting}
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="btn-action btn-action-primary flex-1 justify-center"
             >
               {isSubmitting ? 'Creando...' : 'Crear Usuario'}
             </button>
@@ -504,7 +504,7 @@ export function UsuariosManager() {
                 resetForm();
               }}
               disabled={isSubmitting}
-              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 transition-colors"
+              className="btn-action btn-action-outline flex-1 justify-center"
             >
               Cancelar
             </button>
@@ -604,7 +604,7 @@ export function UsuariosManager() {
             <button
               onClick={handleEdit}
               disabled={isSubmitting}
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="btn-action btn-action-primary flex-1 justify-center"
             >
               {isSubmitting ? 'Guardando...' : 'Guardar Cambios'}
             </button>
@@ -614,7 +614,7 @@ export function UsuariosManager() {
                 resetForm();
               }}
               disabled={isSubmitting}
-              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 transition-colors"
+              className="btn-action btn-action-outline flex-1 justify-center"
             >
               Cancelar
             </button>
@@ -658,7 +658,7 @@ export function UsuariosManager() {
             <button
               onClick={handleChangePassword}
               disabled={isSubmitting}
-              className="flex-1 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="btn-action btn-action-warning flex-1 justify-center"
             >
               {isSubmitting ? 'Cambiando...' : 'Cambiar Contraseña'}
             </button>
@@ -669,7 +669,7 @@ export function UsuariosManager() {
                 setSelectedUsuario(null);
               }}
               disabled={isSubmitting}
-              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 transition-colors"
+              className="btn-action btn-action-outline flex-1 justify-center"
             >
               Cancelar
             </button>

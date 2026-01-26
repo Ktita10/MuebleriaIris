@@ -25,9 +25,19 @@ def allowed_file(filename):
 
 @catalogo_bp.route('/categorias', methods=['GET'])
 def get_categorias():
-    """Obtener todas las categorías"""
+    """
+    Obtener todas las categorías
+    Query params: ?incluir_inactivas=true (para ver todas)
+    """
     try:
-        categorias = Categoria.query.all()
+        query = Categoria.query
+        
+        # Por defecto, solo mostrar categorías activas
+        incluir_inactivas = request.args.get('incluir_inactivas', 'false').lower() == 'true'
+        if not incluir_inactivas:
+            query = query.filter_by(activa=True)
+        
+        categorias = query.all()
         return jsonify([c.to_dict() for c in categorias]), 200
     except Exception as e:
         return jsonify({"error": "Error al obtener categorías", "detalle": str(e)}), 500
@@ -168,36 +178,86 @@ def create_producto():
         "material": str (requerido)
     }
     """
-    data = request.get_json()
-
-    # Validación de campos requeridos
-    campos_requeridos = ["sku", "nombre", "precio", "id_categoria", "material"]
-    for campo in campos_requeridos:
-        if campo not in data:
-            return jsonify({"error": f"El campo '{campo}' es requerido"}), 400
-
-    # Verificar SKU único
-    if Producto.query.filter_by(sku=data["sku"]).first():
-        return jsonify({"error": "El SKU ya existe"}), 409
-
-    # Verificar que la categoría existe
-    categoria = Categoria.query.get(data["id_categoria"])
-    if not categoria:
-        return jsonify({"error": "Categoría no encontrada"}), 404
-
-    nuevo_producto = Producto(
-        sku=data["sku"].strip(),
-        nombre=data["nombre"].strip(),
-        descripcion=data.get("descripcion", "").strip() or None,
-        precio=data["precio"],
-        id_categoria=data["id_categoria"],
-        alto_cm=data.get("alto_cm"),
-        ancho_cm=data.get("ancho_cm"),
-        profundidad_cm=data.get("profundidad_cm"),
-        material=data["material"].strip()
-    )
-
     try:
+        data = request.get_json()
+        
+        if not data:
+            return jsonify({"error": "No se recibieron datos"}), 400
+
+        # Validación de campos requeridos
+        campos_requeridos = ["sku", "nombre", "precio", "id_categoria", "material"]
+        for campo in campos_requeridos:
+            if campo not in data or data[campo] is None:
+                return jsonify({"error": f"El campo '{campo}' es requerido"}), 400
+
+        # Validar tipos de datos
+        if not isinstance(data["sku"], str) or not data["sku"].strip():
+            return jsonify({"error": "SKU debe ser un texto no vacío"}), 400
+        if not isinstance(data["nombre"], str) or not data["nombre"].strip():
+            return jsonify({"error": "Nombre debe ser un texto no vacío"}), 400
+        if not isinstance(data["material"], str) or not data["material"].strip():
+            return jsonify({"error": "Material debe ser un texto no vacío"}), 400
+        
+        try:
+            precio = float(data["precio"])
+            if precio <= 0:
+                return jsonify({"error": "El precio debe ser mayor a 0"}), 400
+        except (TypeError, ValueError):
+            return jsonify({"error": "Precio debe ser un número válido"}), 400
+        
+        try:
+            id_categoria = int(data["id_categoria"])
+            if id_categoria <= 0:
+                return jsonify({"error": "Debe seleccionar una categoría válida"}), 400
+        except (TypeError, ValueError):
+            return jsonify({"error": "ID de categoría debe ser un número válido"}), 400
+
+        # Verificar SKU único
+        if Producto.query.filter_by(sku=data["sku"].strip()).first():
+            return jsonify({"error": "El SKU ya existe"}), 409
+
+        # Verificar que la categoría existe y está activa
+        categoria = db.session.get(Categoria, id_categoria)
+        if not categoria:
+            return jsonify({"error": "Categoría no encontrada"}), 404
+        if not categoria.activa:
+            return jsonify({"error": "La categoría seleccionada no está activa"}), 400
+
+        # Procesar dimensiones opcionales
+        alto_cm = None
+        ancho_cm = None
+        profundidad_cm = None
+        
+        if data.get("alto_cm") is not None and data.get("alto_cm") != 0:
+            try:
+                alto_cm = float(data["alto_cm"])
+            except (TypeError, ValueError):
+                pass
+                
+        if data.get("ancho_cm") is not None and data.get("ancho_cm") != 0:
+            try:
+                ancho_cm = float(data["ancho_cm"])
+            except (TypeError, ValueError):
+                pass
+                
+        if data.get("profundidad_cm") is not None and data.get("profundidad_cm") != 0:
+            try:
+                profundidad_cm = float(data["profundidad_cm"])
+            except (TypeError, ValueError):
+                pass
+
+        nuevo_producto = Producto(
+            sku=data["sku"].strip(),
+            nombre=data["nombre"].strip(),
+            descripcion=data.get("descripcion", "").strip() if data.get("descripcion") else None,
+            precio=precio,
+            id_categoria=id_categoria,
+            alto_cm=alto_cm,
+            ancho_cm=ancho_cm,
+            profundidad_cm=profundidad_cm,
+            material=data["material"].strip()
+        )
+
         db.session.add(nuevo_producto)
         db.session.commit()
         return jsonify({
@@ -206,6 +266,9 @@ def create_producto():
         }), 201
     except Exception as e:
         db.session.rollback()
+        import traceback
+        print(f"Error al crear producto: {str(e)}")
+        print(traceback.format_exc())
         return jsonify({"error": "Error al crear producto", "detalle": str(e)}), 500
 
 
@@ -278,6 +341,82 @@ def delete_producto(id):
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": "Error al desactivar producto", "detalle": str(e)}), 500
+
+
+# ==============================================================================
+#                            PAPELERA (PRODUCTOS ELIMINADOS)
+# ==============================================================================
+
+@catalogo_bp.route('/productos/papelera', methods=['GET'])
+def get_productos_papelera():
+    """
+    Obtener todos los productos eliminados (soft-deleted)
+    Returns: Lista de productos con activo=False
+    """
+    try:
+        productos = Producto.query.filter_by(activo=False).order_by(Producto.fecha_creacion.desc()).all()
+        return jsonify([p.to_dict() for p in productos]), 200
+    except Exception as e:
+        return jsonify({"error": "Error al obtener productos eliminados", "detalle": str(e)}), 500
+
+
+@catalogo_bp.route('/productos/<int:id>/restaurar', methods=['POST'])
+def restaurar_producto(id):
+    """
+    Restaurar un producto eliminado (volver a activo=True)
+    """
+    try:
+        producto = db.session.get(Producto, id)
+        if not producto:
+            return jsonify({"error": "Producto no encontrado"}), 404
+
+        if producto.activo:
+            return jsonify({"error": "El producto ya está activo"}), 400
+
+        producto.activo = True
+        db.session.commit()
+        
+        return jsonify({
+            "mensaje": "Producto restaurado exitosamente",
+            "producto": producto.to_dict()
+        }), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "Error al restaurar producto", "detalle": str(e)}), 500
+
+
+@catalogo_bp.route('/productos/<int:id>/eliminar-permanente', methods=['DELETE'])
+def eliminar_producto_permanente(id):
+    """
+    Eliminar permanentemente un producto (hard delete)
+    Solo permitido si el producto ya está en papelera (activo=False)
+    y no tiene órdenes asociadas
+    """
+    try:
+        producto = db.session.get(Producto, id)
+        if not producto:
+            return jsonify({"error": "Producto no encontrado"}), 404
+
+        if producto.activo:
+            return jsonify({"error": "El producto debe estar en la papelera para eliminarlo permanentemente. Primero desactívelo."}), 400
+
+        # Verificar si tiene órdenes asociadas
+        if producto.detalles_orden and len(producto.detalles_orden) > 0:
+            return jsonify({
+                "error": "No se puede eliminar permanentemente un producto con órdenes asociadas",
+                "ordenes_asociadas": len(producto.detalles_orden)
+            }), 409
+
+        # Eliminar permanentemente
+        db.session.delete(producto)
+        db.session.commit()
+        
+        return jsonify({
+            "mensaje": "Producto eliminado permanentemente"
+        }), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "Error al eliminar producto", "detalle": str(e)}), 500
 
 
 # ==============================================================================

@@ -5,13 +5,11 @@
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
-import { productosApi, categoriasApi, type Producto, type ProductoInput, type Categoria, type ImagenProducto } from '../../lib/api';
+import { productosApi, categoriasApi, getImageUrl, type Producto, type ProductoInput, type Categoria, type ImagenProducto } from '../../lib/api';
 import Modal from '../ui/Modal';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 import { ErrorAlert, SuccessAlert } from '../ui/Alerts';
 import { LoadingSpinner } from '../ui/LoadingSpinner';
-
-const API_BASE_URL = 'http://localhost:5000';
 
 export function ProductosManager() {
   const [productos, setProductos] = useState<Producto[]>([]);
@@ -261,12 +259,6 @@ export function ProductosManager() {
     }
   };
 
-  const getImageUrl = (url: string | null) => {
-    if (!url) return null;
-    if (url.startsWith('http')) return url;
-    return `${API_BASE_URL}${url}`;
-  };
-
   const filteredProductos = productos.filter(producto => {
     const matchesSearch = producto.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          producto.sku.toLowerCase().includes(searchTerm.toLowerCase());
@@ -293,7 +285,8 @@ export function ProductosManager() {
         </div>
         <button
           onClick={openCreateModal}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="btn-action btn-action-primary"
+          style={{ padding: '0.5rem 1rem' }}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -348,7 +341,7 @@ export function ProductosManager() {
                   <div className="flex items-center gap-3">
                     {producto.imagen_principal ? (
                       <img 
-                        src={getImageUrl(producto.imagen_principal) || ''} 
+                        src={getImageUrl(producto.imagen_principal)} 
                         alt={producto.nombre} 
                         className="w-12 h-12 rounded object-cover bg-gray-100"
                         onError={(e) => {
@@ -376,7 +369,7 @@ export function ProductosManager() {
                   <div className="flex items-center justify-end gap-2">
                     <button
                       onClick={() => openImageModal(producto)}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors shadow-sm"
+                      className="btn-action btn-action-success"
                       title="Gestionar imágenes"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -386,7 +379,7 @@ export function ProductosManager() {
                     </button>
                     <button
                       onClick={() => openEditModal(producto)}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors shadow-sm"
+                      className="btn-action btn-action-primary"
                       title="Editar producto"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -396,7 +389,7 @@ export function ProductosManager() {
                     </button>
                     <button
                       onClick={() => openDeleteDialog(producto)}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors shadow-sm"
+                      className="btn-action btn-action-danger"
                       title="Desactivar producto"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -587,14 +580,16 @@ export function ProductosManager() {
                 setIsEditModalOpen(false);
               }}
               disabled={isSubmitting}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+              className="btn-action btn-action-outline"
+              style={{ padding: '0.5rem 1rem' }}
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              className="btn-action btn-action-primary"
+              style={{ padding: '0.5rem 1rem' }}
             >
               {isSubmitting ? 'Guardando...' : isCreateModalOpen ? 'Crear Producto' : 'Guardar Cambios'}
             </button>
@@ -611,9 +606,9 @@ export function ProductosManager() {
         message={
           selectedProducto
             ? `El producto "${selectedProducto.nombre}" será desactivado (no eliminado). ${
-                selectedProducto.stock > 0
-                  ? `\n\n⚠️ Stock actual: ${selectedProducto.stock} unidades.`
-                  : ''
+               selectedProducto?.stock && selectedProducto.stock > 0
+                   ? `\n\n⚠️ Stock actual: ${selectedProducto.stock} unidades.`
+                   : ''
               }\n\nEl producto permanecerá en el historial de órdenes pero no estará disponible para nuevas ventas.`
             : ''
         }
@@ -673,18 +668,18 @@ export function ProductosManager() {
             {productImages.map((img) => (
               <div key={img.id} className="relative group">
                 <img
-                  src={getImageUrl(img.url) || ''}
+                  src={getImageUrl(img.url)}
                   alt={img.descripcion || 'Imagen del producto'}
                   className="w-full h-32 object-cover rounded-lg"
                 />
                 {img.imagen_principal && (
-                  <span className="absolute top-2 left-2 px-2 py-1 bg-blue-600 text-white text-xs rounded">
+                  <span className="badge-primary absolute top-2 left-2">
                     Principal
                   </span>
                 )}
                 <button
                   onClick={() => handleDeleteImage(img.id)}
-                  className="absolute top-2 right-2 p-1 bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="btn-icon btn-icon-danger absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
                   title="Eliminar imagen"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -709,7 +704,8 @@ export function ProductosManager() {
                 setSelectedProducto(null);
                 setProductImages([]);
               }}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="btn-action btn-action-outline"
+              style={{ padding: '0.5rem 1rem' }}
             >
               Cerrar
             </button>

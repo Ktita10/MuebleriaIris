@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -8,6 +9,13 @@ BASEDIR = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'clave-secreta-cambia-esto'
+    
+    # JWT Configuration
+    JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY') or os.environ.get('SECRET_KEY') or 'jwt-secret-cambia-esto-en-produccion'
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=24)  # 24 horas
+    JWT_TOKEN_LOCATION = ['headers']
+    JWT_HEADER_NAME = 'Authorization'
+    JWT_HEADER_TYPE = 'Bearer'
     
     # Construcción de la URI de la base de datos
     DB_USER = os.environ.get('DB_USER', 'postgres')

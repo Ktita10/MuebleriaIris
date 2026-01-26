@@ -1,3 +1,5 @@
+import { getImageUrl } from '../../lib/api';
+
 interface ProductCardProps {
   id: number;
   nombre: string;
@@ -8,20 +10,12 @@ interface ProductCardProps {
   onAddToCart?: (id: number) => void;
 }
 
-const API_BASE_URL = 'http://localhost:5000';
-
 function formatPrice(price: number): string {
   return new Intl.NumberFormat("es-AR", {
     style: "currency",
     currency: "ARS",
     minimumFractionDigits: 0,
   }).format(price);
-}
-
-function getImageUrl(url: string | null | undefined): string | null {
-  if (!url) return null;
-  if (url.startsWith('http')) return url;
-  return `${API_BASE_URL}${url}`;
 }
 
 export default function ProductCard({

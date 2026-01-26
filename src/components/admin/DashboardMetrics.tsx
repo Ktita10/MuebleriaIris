@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { dashboardApi } from '../../lib/api';
 
 interface DashboardData {
   periodo: string;
@@ -54,14 +55,8 @@ export function DashboardMetrics({ periodo = 'mes' }: DashboardMetricsProps) {
     setError(null);
 
     try {
-      const response = await fetch(`http://localhost:5000/api/dashboard/metricas?periodo=${selectedPeriodo}`);
-      
-      if (!response.ok) {
-        throw new Error('Error al cargar métricas del dashboard');
-      }
-
-      const jsonData = await response.json();
-      setData(jsonData);
+      const jsonData = await dashboardApi.getMetricas(selectedPeriodo);
+      setData(jsonData as unknown as DashboardData);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error desconocido');
     } finally {
@@ -78,10 +73,10 @@ export function DashboardMetrics({ periodo = 'mes' }: DashboardMetricsProps) {
   };
 
   const statusColors: { [key: string]: string } = {
-    completada: 'bg-green-100 text-green-700',
-    en_proceso: 'bg-blue-100 text-blue-700',
-    pendiente: 'bg-yellow-100 text-yellow-700',
-    cancelada: 'bg-red-100 text-red-700',
+    completada: 'badge-success',
+    en_proceso: 'badge-primary',
+    pendiente: 'badge-warning',
+    cancelada: 'badge-danger',
   };
 
   if (loading) {
@@ -179,7 +174,7 @@ export function DashboardMetrics({ periodo = 'mes' }: DashboardMetricsProps) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <span className="text-sm font-medium px-2 py-1 rounded-full bg-green-100 text-green-700">
+            <span className={`text-sm font-medium px-2 py-1 rounded-full badge-success`}>
               {data.ventas.cantidad_ordenes} órdenes
             </span>
           </div>
@@ -210,8 +205,8 @@ export function DashboardMetrics({ periodo = 'mes' }: DashboardMetricsProps) {
             </div>
             <span className={`text-sm font-medium px-2 py-1 rounded-full ${
               data.productos_bajo_stock.length > 0 
-                ? 'bg-red-100 text-red-700' 
-                : 'bg-green-100 text-green-700'
+                ? 'badge-danger' 
+                : 'badge-success'
             }`}>
               {data.productos_bajo_stock.length > 0 ? 'Alerta' : 'OK'}
             </span>
@@ -310,7 +305,7 @@ export function DashboardMetrics({ periodo = 'mes' }: DashboardMetricsProps) {
                 {data.ordenes_por_estado.map((item) => (
                   <div key={item.estado} className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className={`text-xs font-medium px-2 py-1 rounded-full ${statusColors[item.estado] || 'bg-gray-100 text-gray-700'}`}>
+                      <span className={`text-xs font-medium px-2 py-1 rounded-full ${statusColors[item.estado] || 'badge-secondary'}`}>
                         {item.estado}
                       </span>
                     </div>
