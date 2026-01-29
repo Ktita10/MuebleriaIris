@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useStore } from "@nanostores/react";
 import { $cartItems, $cartTotal, clearCart } from "../../stores/cart";
 import { $user, $isAuthenticated, $token } from "../../stores/auth";
-import { ordenesApi } from "../../lib/api";
+import { ordenesApi, productosApi } from "../../lib/api";
 import Button from "../ui/Button";
 import Input from "../ui/Input";
 import Select from "../ui/Select";
@@ -156,6 +156,45 @@ export default function CheckoutForm() {
     setIsSubmitting(true);
 
     try {
+      // VALIDACIÓN DE STOCK: Verificar disponibilidad antes de crear la orden
+      const stockValidation = await Promise.all(
+        items.map(async (item) => {
+          try {
+            const producto = await productosApi.getById(item.id);
+            const stock = producto.stock ?? 0;
+            return {
+              id: item.id,
+              nombre: item.nombre,
+              requested: item.cantidad,
+              available: stock,
+              valid: item.cantidad <= stock,
+            };
+          } catch (error) {
+            return {
+              id: item.id,
+              nombre: item.nombre,
+              requested: item.cantidad,
+              available: 0,
+              valid: false,
+            };
+          }
+        })
+      );
+
+      // Check if any product has insufficient stock
+      const invalidProducts = stockValidation.filter(p => !p.valid);
+      if (invalidProducts.length > 0) {
+        const errorMessages = invalidProducts.map(p => 
+          `${p.nombre}: solicitaste ${p.requested} pero solo hay ${p.available} disponible${p.available !== 1 ? 's' : ''}`
+        ).join(' • ');
+        
+        setErrors({ 
+          submit: `Stock insuficiente: ${errorMessages}. Por favor, actualiza las cantidades en tu carrito.` 
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
       // Create order using the real API
       const ordenData = {
         id_cliente: user.cliente_id,
@@ -577,22 +616,74 @@ export default function CheckoutForm() {
         </div>
       )}
 
-      <Button
-        type="submit"
-        size="lg"
-        fullWidth
-        isLoading={isSubmitting}
-      >
-        {isSubmitting ? "Procesando..." : "Confirmar Pedido"}
-      </Button>
+      {/* Submit Button - Redesigned */}
+      <div className="relative">
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className={`
+            group relative w-full overflow-hidden
+            py-5 px-8 rounded-2xl
+            font-bold text-lg
+            transform transition-all duration-300
+            ${isSubmitting 
+              ? 'bg-gradient-to-r from-gray-400 to-gray-500 cursor-wait scale-95' 
+              : 'bg-gradient-to-r from-primary-600 via-primary-700 to-primary-600 hover:shadow-2xl hover:shadow-primary-500/50 hover:scale-[1.02] active:scale-95'
+            }
+            text-white
+            disabled:cursor-not-allowed
+          `}
+        >
+          {/* Animated Background Effect */}
+          {!isSubmitting && (
+            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
+          )}
+          
+          {/* Button Content */}
+          <span className="relative flex items-center justify-center gap-3">
+            {isSubmitting ? (
+              <>
+                <svg className="animate-spin h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>Procesando tu pedido...</span>
+              </>
+            ) : (
+              <>
+                <svg className="w-6 h-6 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+                </svg>
+                <span className="tracking-wide">Finalizar Compra</span>
+                <svg className="w-6 h-6 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </>
+            )}
+          </span>
+
+          {/* Pulsating Ring Effect */}
+          {!isSubmitting && (
+            <span className="absolute inset-0 rounded-2xl bg-primary-600 opacity-0 group-hover:opacity-100 group-hover:animate-ping"></span>
+          )}
+        </button>
+        
+        {/* Secure Badge */}
+        <div className="flex items-center justify-center gap-2 mt-4 text-sm text-gray-500">
+          <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+          </svg>
+          <span className="font-medium">Pago 100% seguro y protegido</span>
+        </div>
+      </div>
 
       <p className="text-center text-sm text-gray-500">
         Al confirmar, aceptas nuestros{" "}
-        <a href="/terminos" className="text-primary-600 hover:underline">
+        <a href="/terminos" className="text-primary-600 hover:underline font-medium">
           terminos y condiciones
         </a>{" "}
         y{" "}
-        <a href="/privacidad" className="text-primary-600 hover:underline">
+        <a href="/privacidad" className="text-primary-600 hover:underline font-medium">
           politica de privacidad
         </a>
         .

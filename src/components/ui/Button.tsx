@@ -47,7 +47,7 @@ export default function Button({
         rounded-lg
         transition-all duration-200
         focus:outline-none focus:ring-2 focus:ring-offset-2
-        disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none
+        ${isLoading ? 'cursor-wait opacity-90' : 'disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none'}
         ${variantStyles[variant]}
         ${sizeStyles[size]}
         ${fullWidth ? "w-full" : ""}

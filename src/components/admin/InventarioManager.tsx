@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
-import { inventarioApi, productosApi, type Inventario, type InventarioAjuste, type Producto } from '../../lib/api';
+import { inventarioApi, productosApi, getImageUrl, type Inventario, type InventarioAjuste, type Producto } from '../../lib/api';
 import Modal from '../ui/Modal';
 import { ErrorAlert, SuccessAlert } from '../ui/Alerts';
 import { LoadingSpinner } from '../ui/LoadingSpinner';
@@ -294,7 +294,6 @@ export function InventarioManager() {
               <thead>
                 <tr className="text-left text-sm text-gray-500 border-b border-gray-200 bg-gray-50">
                   <th className="px-6 py-4 font-medium">Producto</th>
-                  <th className="px-6 py-4 font-medium">SKU</th>
                   <th className="px-6 py-4 font-medium">Ubicación</th>
                   <th className="px-6 py-4 font-medium">Stock</th>
                   <th className="px-6 py-4 font-medium">Estado</th>
@@ -310,21 +309,23 @@ export function InventarioManager() {
                         <div className="flex items-center gap-3">
                           {inv.producto?.imagen_principal ? (
                             <img
-                              src={inv.producto.imagen_principal}
+                              src={getImageUrl(inv.producto.imagen_principal)}
                               alt={inv.producto.nombre}
-                              className="w-10 h-10 rounded-lg object-cover"
+                              className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
                             />
                           ) : (
-                            <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                            <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
                               <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                               </svg>
                             </div>
                           )}
-                          <span className="font-medium text-gray-900">{inv.producto?.nombre || 'Producto desconocido'}</span>
+                          <div className="min-w-0 flex-1">
+                            <div className="font-medium text-gray-900 truncate">{inv.producto?.nombre || 'Producto desconocido'}</div>
+                            <div className="text-xs text-gray-500">SKU: {inv.producto?.sku}</div>
+                          </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm font-mono text-gray-600">{inv.producto?.sku}</td>
                       <td className="px-6 py-4 text-sm text-gray-600">{inv.ubicacion}</td>
                       <td className="px-6 py-4">
                         <span className="text-2xl font-bold text-gray-900">{inv.stock}</span>
@@ -384,18 +385,18 @@ export function InventarioManager() {
                 <div className="flex items-center gap-3 mb-2">
                   {selectedInventario.producto?.imagen_principal ? (
                     <img
-                      src={selectedInventario.producto.imagen_principal}
+                      src={getImageUrl(selectedInventario.producto.imagen_principal)}
                       alt={selectedInventario.producto.nombre}
-                      className="w-12 h-12 rounded-lg object-cover"
+                      className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
                     />
                   ) : (
-                    <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                      <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                     </div>
                   )}
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <p className="font-medium text-gray-900">{selectedInventario.producto?.nombre}</p>
                     <p className="text-sm text-gray-600">SKU: {selectedInventario.producto?.sku}</p>
                   </div>
@@ -414,7 +415,7 @@ export function InventarioManager() {
                   type="number"
                   min="1"
                   max={ajusteType === 'remove' ? selectedInventario.stock : undefined}
-                  value={formData.cantidad || ''}
+                  value={formData.cantidad === 0 ? '' : formData.cantidad}
                   onChange={e => setFormData({ ...formData, cantidad: parseInt(e.target.value) || 0 })}
                   className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent ${formErrors.cantidad ? 'border-red-500' : 'border-gray-300'}`}
                   placeholder="0"

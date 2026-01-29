@@ -77,10 +77,10 @@ function formatPrice(price: number): string {
     </div>
 
     <!-- Products Grid -->
-    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 justify-items-center">
       {
         placeholderProducts.map((product) => (
-          <article class="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100">
+          <article class="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 w-full max-w-sm">
             {/* Product Image */}
             <a href={`/producto/${product.id}`} class="block relative aspect-square bg-gray-100 overflow-hidden">
               {product.imagen ? (

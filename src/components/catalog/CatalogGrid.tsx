@@ -16,6 +16,8 @@ interface CatalogGridProps {
   categoria?: string | null;
   buscar?: string | null;
   orden?: string;
+  paginaInicial?: number;
+  onFiltersReady?: (callback: (buscar: string, orden: string) => void) => void;
 }
 
 const categoryMap: Record<string, string> = {
@@ -26,14 +28,31 @@ const categoryMap: Record<string, string> = {
   estanterias: "Estanterias",
 };
 
-export default function CatalogGrid({ categoria, buscar, orden = "nombre" }: CatalogGridProps) {
+export default function CatalogGrid({ categoria, buscar, orden = "nombre", paginaInicial = 1, onFiltersReady }: CatalogGridProps) {
   const [products, setProducts] = useState<Producto[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Producto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(paginaInicial);
+  const [currentBuscar, setCurrentBuscar] = useState(buscar || '');
+  const [currentOrden, setCurrentOrden] = useState(orden);
+  
+  const ITEMS_PER_PAGE = 20; // 5 rows × 4 columns
+
+  // Register callback for real-time filtering
+  useEffect(() => {
+    if (onFiltersReady) {
+      onFiltersReady((newBuscar: string, newOrden: string) => {
+        setCurrentBuscar(newBuscar);
+        setCurrentOrden(newOrden);
+        setCurrentPage(1); // Reset to page 1 on filter change
+      });
+    }
+  }, [onFiltersReady]);
 
   useEffect(() => {
     loadProducts();
-  }, [categoria, buscar, orden]);
+  }, [categoria]);
 
   const loadProducts = async () => {
     setIsLoading(true);
@@ -49,38 +68,47 @@ export default function CatalogGrid({ categoria, buscar, orden = "nombre" }: Cat
         filtered = filtered.filter((p) => p.categoria === categoryMap[categoria]);
       }
 
-      // Filter by search
-      if (buscar) {
-        const searchLower = buscar.toLowerCase();
-        filtered = filtered.filter(
-          (p) =>
-            p.nombre.toLowerCase().includes(searchLower) ||
-            p.descripcion?.toLowerCase().includes(searchLower) ||
-            p.material?.toLowerCase().includes(searchLower)
-        );
-      }
-
-      // Sort products
-      switch (orden) {
-        case "precio_asc":
-          filtered.sort((a, b) => a.precio - b.precio);
-          break;
-        case "precio_desc":
-          filtered.sort((a, b) => b.precio - a.precio);
-          break;
-        case "nombre":
-        default:
-          filtered.sort((a, b) => a.nombre.localeCompare(b.nombre));
-          break;
-      }
-
       setProducts(filtered);
+      setFilteredProducts(filtered);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error al cargar productos");
     } finally {
       setIsLoading(false);
     }
   };
+
+  // Apply filters and sorting in real-time
+  useEffect(() => {
+    let filtered = [...products];
+
+    // Filter by search
+    if (currentBuscar) {
+      const searchLower = currentBuscar.toLowerCase();
+      filtered = filtered.filter(
+        (p) =>
+          p.nombre.toLowerCase().includes(searchLower) ||
+          p.descripcion?.toLowerCase().includes(searchLower) ||
+          p.material?.toLowerCase().includes(searchLower)
+      );
+    }
+
+    // Sort products
+    switch (currentOrden) {
+      case "precio_asc":
+        filtered.sort((a, b) => a.precio - b.precio);
+        break;
+      case "precio_desc":
+        filtered.sort((a, b) => b.precio - a.precio);
+        break;
+      case "nombre":
+      default:
+        filtered.sort((a, b) => a.nombre.localeCompare(b.nombre));
+        break;
+    }
+
+    setFilteredProducts(filtered);
+    setCurrentPage(1); // Reset to page 1 when filters change
+  }, [products, currentBuscar, currentOrden]);
 
   const handleAddToCart = (id: number) => {
     // In production, this would add to cart context
@@ -113,7 +141,7 @@ export default function CatalogGrid({ categoria, buscar, orden = "nombre" }: Cat
     );
   }
 
-  if (products.length === 0) {
+  if (filteredProducts.length === 0) {
     return (
       <div className="text-center py-20">
         <svg
@@ -149,25 +177,92 @@ export default function CatalogGrid({ categoria, buscar, orden = "nombre" }: Cat
     <>
       {/* Results count */}
       <p className="text-sm text-gray-500 mb-6">
-        {products.length} producto{products.length !== 1 ? "s" : ""} encontrado
-        {products.length !== 1 ? "s" : ""}
+        {filteredProducts.length} producto{filteredProducts.length !== 1 ? "s" : ""} encontrado
+        {filteredProducts.length !== 1 ? "s" : ""}
       </p>
 
       {/* Product Grid */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {products.map((product) => (
-          <ProductCard
-            key={product.id}
-            id={product.id}
-            nombre={product.nombre}
-            precio={product.precio}
-            categoria={product.categoria}
-            imagen={product.imagen_principal}
-            material={product.material}
-            onAddToCart={handleAddToCart}
-          />
-        ))}
+        {filteredProducts
+          .slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE)
+          .map((product) => (
+            <ProductCard
+              key={product.id}
+              id={product.id}
+              nombre={product.nombre}
+              precio={product.precio}
+              categoria={product.categoria}
+              imagen={product.imagen_principal}
+              material={product.material}
+              onAddToCart={handleAddToCart}
+            />
+          ))}
       </div>
+
+      {/* Pagination Controls */}
+      {filteredProducts.length > ITEMS_PER_PAGE && (
+        <div className="flex items-center justify-center gap-2 mt-12">
+          {/* Previous button */}
+          <button
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            aria-label="Página anterior"
+          >
+            ←
+          </button>
+
+          {/* Page numbers */}
+          {Array.from({ length: Math.ceil(filteredProducts.length / ITEMS_PER_PAGE) }, (_, i) => i + 1).map((pageNum) => {
+            const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
+            
+            // Show first page, last page, current page, and pages around current
+            const showPage = 
+              pageNum === 1 || 
+              pageNum === totalPages || 
+              (pageNum >= currentPage - 1 && pageNum <= currentPage + 1);
+            
+            // Show ellipsis
+            const showEllipsis = 
+              (pageNum === 2 && currentPage > 3) ||
+              (pageNum === totalPages - 1 && currentPage < totalPages - 2);
+            
+            if (!showPage && !showEllipsis) return null;
+            
+            if (showEllipsis) {
+              return (
+                <span key={pageNum} className="px-2 text-gray-400">
+                  ...
+                </span>
+              );
+            }
+            
+            return (
+              <button
+                key={pageNum}
+                onClick={() => setCurrentPage(pageNum)}
+                className={`px-4 py-2 rounded-lg transition-colors ${
+                  currentPage === pageNum
+                    ? 'bg-primary-600 text-white'
+                    : 'border border-gray-300 text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                {pageNum}
+              </button>
+            );
+          })}
+
+          {/* Next button */}
+          <button
+            onClick={() => setCurrentPage(p => Math.min(Math.ceil(filteredProducts.length / ITEMS_PER_PAGE), p + 1))}
+            disabled={currentPage === Math.ceil(filteredProducts.length / ITEMS_PER_PAGE)}
+            className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            aria-label="Página siguiente"
+          >
+            →
+          </button>
+        </div>
+      )}
     </>
   );
 }

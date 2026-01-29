@@ -34,13 +34,13 @@ export default function ProductCard({
       {/* Product Image */}
       <a
         href={`/producto/${id}`}
-        className="block relative aspect-square bg-gray-100 overflow-hidden"
+        className="block relative aspect-square bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden"
       >
         {imageUrl ? (
           <img
             src={imageUrl}
             alt={nombre}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
             loading="lazy"
             onError={(e) => {
               // If image fails to load, hide it

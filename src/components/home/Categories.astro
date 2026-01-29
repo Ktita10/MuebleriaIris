@@ -1,41 +1,55 @@
 ---
-const categories = [
-  {
-    name: "Sofas",
-    slug: "sofas",
-    description: "Comodidad para tu living",
-    productCount: 24,
-    color: "from-blue-500 to-blue-600",
-  },
-  {
-    name: "Sillas",
-    slug: "sillas",
-    description: "Estilo y ergonomia",
-    productCount: 36,
-    color: "from-green-500 to-green-600",
-  },
-  {
-    name: "Mesas",
-    slug: "mesas",
-    description: "El centro de reunion",
-    productCount: 18,
-    color: "from-amber-500 to-amber-600",
-  },
-  {
-    name: "Camas",
-    slug: "camas",
-    description: "Descanso perfecto",
-    productCount: 15,
-    color: "from-purple-500 to-purple-600",
-  },
-  {
-    name: "Estanterias",
-    slug: "estanterias",
-    description: "Organizacion con estilo",
-    productCount: 22,
-    color: "from-rose-500 to-rose-600",
-  },
+import { categoriasApi, productosApi } from "../../lib/api";
+
+// Fetch categories from the API
+const categorias = await categoriasApi.getAll();
+
+// Map categories with their metadata and fetch product counts
+const categoryColors = [
+  "from-blue-500 to-blue-600",
+  "from-green-500 to-green-600",
+  "from-amber-500 to-amber-600",
+  "from-purple-500 to-purple-600",
+  "from-rose-500 to-rose-600",
 ];
+
+const categoryDescriptions: Record<string, string> = {
+  sofas: "Comodidad para tu living",
+  sillas: "Estilo y ergonomia",
+  mesas: "El centro de reunion",
+  camas: "Descanso perfecto",
+  estanterias: "Organizacion con estilo",
+};
+
+// Fetch product counts for each category
+const categoriesWithCounts = await Promise.all(
+  categorias.map(async (cat, index) => {
+    try {
+      const productos = await productosApi.getAll({ 
+        categoria_id: cat.id,
+        activo: true 
+      });
+      return {
+        name: cat.nombre,
+        slug: cat.nombre.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''),
+        description: categoryDescriptions[cat.nombre.toLowerCase()] || cat.descripcion,
+        productCount: productos.length,
+        color: categoryColors[index % categoryColors.length],
+      };
+    } catch (error) {
+      // Fallback if fetch fails
+      return {
+        name: cat.nombre,
+        slug: cat.nombre.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''),
+        description: categoryDescriptions[cat.nombre.toLowerCase()] || cat.descripcion,
+        productCount: 0,
+        color: categoryColors[index % categoryColors.length],
+      };
+    }
+  })
+);
+
+const categories = categoriesWithCounts;
 ---
 
 <section class="section bg-white">
