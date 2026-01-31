@@ -1,10 +1,10 @@
-# MuebleriaIris - Agent Skills
+# MuebleriaIris - Habilidades de Agente
 
-Complete ERP system for furniture store management with AI agent skills support.
+Sistema ERP completo para gestión de mueblería con soporte de habilidades de agentes de IA.
 
-## Tech Stack
+## Stack Tecnológico
 
-| Component | Technologies |
+| Componente | Tecnologías |
 |-----------|-------------|
 | Frontend  | Astro 5, React 19, TailwindCSS 4, TypeScript |
 | Backend   | Flask, SQLAlchemy, PostgreSQL, Python 3.9+ |
@@ -12,218 +12,234 @@ Complete ERP system for furniture store management with AI agent skills support.
 
 ---
 
-## Available Skills
+## Habilidades Disponibles
 
-### Frontend Skills
-| Skill | Directory | Description |
-|-------|-----------|-------------|
-| `muebleria-ui` | [agents/ui-components](agents/ui-components/SKILL.md) | Astro + React + TailwindCSS patterns |
-| `muebleria-astro` | [agents/astro-pages](agents/astro-pages/SKILL.md) | Astro 5 routing, Islands, SSR patterns |
-| `muebleria-react` | [agents/react-components](agents/react-components/SKILL.md) | React 19 hooks and components |
-| `muebleria-mobile` | [agents/responsive-design](agents/responsive-design/SKILL.md) | Responsive design patterns |
-| `muebleria-forms` | [agents/forms-validation](agents/forms-validation/SKILL.md) | react-hook-form + Zod validation |
-| `muebleria-test-ui` | [agents/testing-frontend](agents/testing-frontend/SKILL.md) | Frontend testing (Playwright, RTL) |
+**Nueva Arquitectura DDD:** Las habilidades están organizadas en categorías siguiendo Clean Architecture.
 
-### Backend Skills
-| Skill | Directory | Description |
+### 🎨 Frontend & UX (`frontend_ux/`)
+| Habilidad | Directorio | Descripción |
 |-------|-----------|-------------|
-| `muebleria-api` | [agents/api-backend](agents/api-backend/SKILL.md) | Flask REST API patterns |
-| `muebleria-python` | [agents/python-dev](agents/python-dev/SKILL.md) | Python development standards |
-| `muebleria-security` | [agents/auth-security](agents/auth-security/SKILL.md) | JWT auth, RBAC, password hashing |
-| `muebleria-errors` | [agents/error-handling](agents/error-handling/SKILL.md) | Error handling and logging |
-| `muebleria-integrations` | [agents/external-integrations](agents/external-integrations/SKILL.md) | External APIs (MercadoPago, emails) |
-| `muebleria-test-api` | [agents/testing-backend](agents/testing-backend/SKILL.md) | Backend testing (pytest) |
+| `muebleria-ui` | [agents/frontend_ux/ui-components](agents/frontend_ux/ui-components/SKILL.md) | Patrones Astro + React + TailwindCSS |
+| `muebleria-astro` | [agents/frontend_ux/astro-pages](agents/frontend_ux/astro-pages/SKILL.md) | Enrutamiento Astro 5, Islands, patrones SSR |
+| `muebleria-react` | [agents/frontend_ux/react-components](agents/frontend_ux/react-components/SKILL.md) | Hooks y componentes React 19 |
+| `muebleria-mobile` | [agents/frontend_ux/responsive-design](agents/frontend_ux/responsive-design/SKILL.md) | Patrones de diseño responsivo |
+| `muebleria-forms` | [agents/frontend_ux/forms-validation](agents/frontend_ux/forms-validation/SKILL.md) | Validación con react-hook-form + Zod |
 
-### Database Skills
-| Skill | Directory | Description |
+### 🎯 Lógica de Negocio (`domain_core/`)
+| Habilidad | Directorio | Descripción |
 |-------|-----------|-------------|
-| `muebleria-db` | [agents/database](agents/database/SKILL.md) | PostgreSQL schema and migrations |
+| `muebleria-api` | [agents/domain_core/api-backend](agents/domain_core/api-backend/SKILL.md) | Patrones de API REST con Flask |
+| `muebleria-db` | [agents/domain_core/database](agents/domain_core/database/SKILL.md) | Esquema PostgreSQL y migraciones |
+| `muebleria-security` | [agents/domain_core/auth-security](agents/domain_core/auth-security/SKILL.md) | Auth JWT, RBAC, hashing de contraseñas |
+| `muebleria-integrations` | [agents/domain_core/external-integrations](agents/domain_core/external-integrations/SKILL.md) | APIs externas (MercadoPago, emails) |
 
-### Documentation & Workflow
-| Skill | Directory | Description |
+### 🏗️ Infraestructura & Ops (`infra_ops/`)
+| Habilidad | Directorio | Descripción |
 |-------|-----------|-------------|
-| `muebleria-docs` | [agents/documentation](agents/documentation/SKILL.md) | Documentation standards |
-| `pull-request` | [agents/git-workflow](agents/git-workflow/SKILL.md) | Git workflow and PR conventions |
-| `muebleria-deployment` | [agents/deployment](agents/deployment/SKILL.md) | Docker, CI/CD, deployment |
+| `muebleria-deployment` | [agents/infra_ops/deployment](agents/infra_ops/deployment/SKILL.md) | Docker, CI/CD, despliegue |
+| `pull-request` | [agents/infra_ops/git-workflow](agents/infra_ops/git-workflow/SKILL.md) | Flujo de trabajo Git y convenciones de PR |
+| `muebleria-python` | [agents/infra_ops/python-dev](agents/infra_ops/python-dev/SKILL.md) | Estándares de desarrollo Python |
+| `muebleria-errors` | [agents/infra_ops/error-handling](agents/infra_ops/error-handling/SKILL.md) | Manejo de errores y logging |
+| `muebleria-docs` | [agents/infra_ops/documentation](agents/infra_ops/documentation/SKILL.md) | Estándares de documentación |
 
-### Meta Skills
-| Skill | Directory | Description |
+### 🧪 Aseguramiento de Calidad (`quality_qa/`)
+| Habilidad | Directorio | Descripción |
 |-------|-----------|-------------|
-| `skill-creator` | [agents/skill-creator](agents/skill-creator/SKILL.md) | Create new agent skills |
-| `skill-sync` | [agents/skill-sync](agents/skill-sync/SKILL.md) | Sync skill metadata to AGENTS.md |
+| `muebleria-test-api` | [agents/quality_qa/testing-backend](agents/quality_qa/testing-backend/SKILL.md) | Pruebas de backend (pytest) |
+| `muebleria-test-ui` | [agents/quality_qa/testing-frontend](agents/quality_qa/testing-frontend/SKILL.md) | Pruebas de frontend (Playwright, RTL) |
+
+### 🤖 Meta-agentes (`meta_skills/`)
+| Habilidad | Directorio | Descripción |
+|-------|-----------|-------------|
+| `skill-creator` | [agents/meta_skills/skill-creator](agents/meta_skills/skill-creator/SKILL.md) | Crear nuevas habilidades de agente |
+| `skill-sync` | [agents/meta_skills/skill-sync](agents/meta_skills/skill-sync/SKILL.md) | Sincronizar metadatos de habilidades a AGENTS.md |
 
 ---
 
-## Skills Enforcement System
+## Sistema de Cumplimiento de Habilidades
 
-**MuebleriaIris uses a mandatory skills invocation system.**
+**MuebleriaIris utiliza un sistema obligatorio de invocación de habilidades.**
 
-### Enforcement Files
+### Archivos de Cumplimiento
 
-1. **[`.clinerules`](.clinerules)** - Primary rules file (READ FIRST)
-2. **[`.opencode/rules.md`](.opencode/rules.md)** - Technical implementation details
-3. **[`.opencode/skills-map.json`](.opencode/skills-map.json)** - Machine-readable pattern mapping
+1. **[`.clinerules`](.clinerules)** - Archivo de reglas principal (LEER PRIMERO)
+2. **[`.opencode/rules.md`](.opencode/rules.md)** - Detalles técnicos de implementación
+3. **[`.opencode/skills-map.json`](.opencode/skills-map.json)** - Mapeo de patrones legible por máquina
 
-### Quick Rule Summary
+### Resumen Rápido de Reglas
 
-**Before writing ANY code:**
-1. STOP - Don't write immediately
-2. MATCH - Check file pattern against `.clinerules`
-3. INVOKE - Call required skill(s) using Skill tool
-4. READ - Fully read skill guidelines
-5. APPLY - Implement following skill patterns
-6. VERIFY - Confirm implementation matches skills
+**Antes de escribir CUALQUIER código:**
+1. DETENTE - No escribas inmediatamente
+2. COINCIDE - Verifica el patrón del archivo contra `.clinerules`
+3. INVOCA - Llama a la(s) habilidad(es) requerida(s) usando la herramienta Skill
+4. LEE - Lee completamente las guías de la habilidad
+5. APLICA - Implementa siguiendo los patrones de la habilidad
+6. VERIFICA - Confirma que la implementación coincide con las habilidades
 
 ---
 
-## GitHub Copilot Compatibility
+## Compatibilidad con GitHub Copilot
 
-Skills are available to GitHub Copilot via symlinks in `.github/skills/`:
+Las habilidades están disponibles para GitHub Copilot a través de enlaces simbólicos en `.github/skills/`:
 
 ```
 .github/skills/
-├── muebleria-ui      → agents/ui-components/
-├── muebleria-api     → agents/api-backend/
-├── muebleria-react   → agents/react-components/
+├── muebleria-ui      → agents/frontend_ux/ui-components/
+├── muebleria-api     → agents/domain_core/api-backend/
+├── muebleria-react   → agents/frontend_ux/react-components/
 └── ...
 ```
 
-Copilot automatically discovers and uses skills based on their descriptions.
+Copilot descubre y utiliza automáticamente las habilidades basándose en sus descripciones.
 
 ---
 
-## Auto-invoke Skills
+## Habilidades de Auto-invocación
 
-When performing these actions, ALWAYS invoke the corresponding skill FIRST:
+Al realizar estas acciones, SIEMPRE invoca la habilidad correspondiente PRIMERO:
 
-| Action | Skill |
+| Acción | Habilidad |
 |--------|-------|
-| Creating/modifying UI components | `muebleria-ui` |
-| Working on Astro layouts and pages | `muebleria-astro` |
-| Using Astro Islands architecture | `muebleria-astro` |
-| Implementing SSR/SSG routes | `muebleria-astro` |
-| Styling with TailwindCSS v4 | `muebleria-ui` |
-| Creating React components | `muebleria-react` |
-| Using React hooks | `muebleria-react` |
-| Building forms with validation | `muebleria-forms` |
-| Creating forms with react-hook-form | `muebleria-forms` |
-| Implementing Zod schemas | `muebleria-forms` |
-| Creating mobile layouts | `muebleria-mobile` |
-| Implementing responsive design | `muebleria-mobile` |
-| Creating/modifying API endpoints | `muebleria-api` |
-| Working with database models | `muebleria-api` |
-| Implementing business logic | `muebleria-api` |
-| Implementing authentication | `muebleria-security` |
-| Setting up JWT tokens | `muebleria-security` |
-| Implementing authorization/RBAC | `muebleria-security` |
-| Password hashing and validation | `muebleria-security` |
-| Implementing error handling | `muebleria-errors` |
-| Setting up logging | `muebleria-errors` |
-| Integrating MercadoPago | `muebleria-integrations` |
-| Sending emails | `muebleria-integrations` |
-| Working with external APIs | `muebleria-integrations` |
-| Deploying to production | `muebleria-deployment` |
-| Setting up Docker | `muebleria-deployment` |
-| Configuring CI/CD | `muebleria-deployment` |
-| Writing Python backend code | `muebleria-python` |
-| Managing Python dependencies | `muebleria-python` |
-| Modifying database schema | `muebleria-db` |
-| Creating migrations | `muebleria-db` |
-| Writing SQL queries | `muebleria-db` |
-| Writing frontend tests | `muebleria-test-ui` |
-| Testing React components | `muebleria-test-ui` |
-| E2E testing with Playwright | `muebleria-test-ui` |
-| Writing API tests | `muebleria-test-api` |
-| Testing Flask endpoints | `muebleria-test-api` |
-| Writing documentation | `muebleria-docs` |
-| Creating pull requests | `pull-request` |
+| Crear/modificar componentes UI | `muebleria-ui` |
+| Trabajar en layouts y páginas Astro | `muebleria-astro` |
+| Usar arquitectura Astro Islands | `muebleria-astro` |
+| Implementar rutas SSR/SSG | `muebleria-astro` |
+| Estilar con TailwindCSS v4 | `muebleria-ui` |
+| Crear componentes React | `muebleria-react` |
+| Usar hooks de React | `muebleria-react` |
+| Construir formularios con validación | `muebleria-forms` |
+| Crear formularios con react-hook-form | `muebleria-forms` |
+| Implementar esquemas Zod | `muebleria-forms` |
+| Crear layouts móviles | `muebleria-mobile` |
+| Implementar diseño responsivo | `muebleria-mobile` |
+| Crear/modificar endpoints API | `muebleria-api` |
+| Trabajar con modelos de base de datos | `muebleria-api` |
+| Implementar lógica de negocio | `muebleria-api` |
+| Implementar autenticación | `muebleria-security` |
+| Configurar tokens JWT | `muebleria-security` |
+| Implementar autorización/RBAC | `muebleria-security` |
+| Hashing y validación de contraseñas | `muebleria-security` |
+| Implementar manejo de errores | `muebleria-errors` |
+| Configurar logging | `muebleria-errors` |
+| Integrar MercadoPago | `muebleria-integrations` |
+| Enviar correos | `muebleria-integrations` |
+| Trabajar con APIs externas | `muebleria-integrations` |
+| Desplegar a producción | `muebleria-deployment` |
+| Configurar Docker | `muebleria-deployment` |
+| Configurar CI/CD | `muebleria-deployment` |
+| Escribir código backend Python | `muebleria-python` |
+| Gestionar dependencias Python | `muebleria-python` |
+| Modificar esquema de base de datos | `muebleria-db` |
+| Crear migraciones | `muebleria-db` |
+| Escribir consultas SQL | `muebleria-db` |
+| Escribir pruebas de frontend | `muebleria-test-ui` |
+| Probar componentes React | `muebleria-test-ui` |
+| Pruebas E2E con Playwright | `muebleria-test-ui` |
+| Escribir pruebas de API | `muebleria-test-api` |
+| Probar endpoints Flask | `muebleria-test-api` |
+| Escribir documentación | `muebleria-docs` |
+| Crear pull requests | `pull-request` |
 
 ---
 
-## Project Structure
+## Estructura del Proyecto
 
 ```
 MuebleriaIris/
-├── src/                    # Frontend (Astro + React)
-│   ├── components/         # UI and feature components
-│   ├── pages/              # File-based routing
-│   ├── layouts/            # Page layouts
-│   ├── stores/             # Global state
-│   └── lib/                # Utilities
+├── core/                   # ✨ Módulo core para agentes
+│   ├── __init__.py
+│   ├── structure.py        # Escaneo de skills
+│   ├── agent_base.py       # Clase base para agentes
+│   └── README.md
 │
-├── backend/                # API Server (Flask)
+├── src/                    # Frontend (Astro + React)
+│   ├── components/         # Componentes UI y de funcionalidad
+│   ├── pages/              # Enrutamiento basado en archivos
+│   ├── layouts/            # Layouts de página
+│   ├── stores/             # Estado global
+│   └── lib/                # Utilidades
+│
+├── backend/                # Servidor API (Flask)
 │   ├── app/
-│   │   ├── routes/         # API endpoints
-│   │   ├── services/       # Business logic
-│   │   └── models.py       # Database models
+│   │   ├── routes/         # Endpoints API
+│   │   ├── services/       # Lógica de negocio
+│   │   └── models.py       # Modelos de base de datos
+│   ├── scripts/            # ✨ Scripts organizados
+│   │   ├── seeds/          # Población de datos
+│   │   ├── maintenance/    # Mantenimiento
+│   │   └── ops/            # Operaciones bash
+│   ├── tests/              # Pruebas backend
+│   ├── run.py
 │   └── config.py
 │
-├── agents/                 # AI Agent Skills (descriptive names)
-│   ├── ui-components/
-│   ├── api-backend/
-│   └── ...
+├── agents/                 # Habilidades de Agente IA (DDD)
+│   ├── infra_ops/          # Infraestructura y operaciones
+│   ├── domain_core/        # Lógica de negocio
+│   ├── frontend_ux/        # Interfaz de usuario
+│   ├── quality_qa/         # Aseguramiento de calidad
+│   └── meta_skills/        # Meta-agentes
 │
-├── .github/skills/         # GitHub Copilot (symlinks)
+├── .github/skills/         # GitHub Copilot (enlaces simbólicos)
 │
-├── docs/                   # Documentation
+├── docs/                   # Documentación
 │   ├── guides/
 │   ├── ai-agents/
 │   └── troubleshooting/
 │
-└── public/                 # Static assets
+└── public/                 # Activos estáticos
 ```
 
 ---
 
-## Development Workflow
+## Flujo de Trabajo de Desarrollo
 
 ```bash
 # Frontend
-npm run dev              # Start dev server (localhost:4321)
-npm run build            # Build for production
-npm test                 # Run frontend tests
+npm run dev              # Iniciar servidor desarrollo (localhost:4321)
+npm run build            # Construir para producción
+npm test                 # Ejecutar pruebas frontend
 
 # Backend
-python backend/run.py    # Start API server (localhost:5000)
-pytest backend/tests/    # Run backend tests
+python backend/run.py    # Iniciar servidor API (localhost:5000)
+pytest backend/tests/    # Ejecutar pruebas backend
 
-# E2E Tests
-npx playwright test      # Run E2E tests
+# Pruebas E2E
+npx playwright test      # Ejecutar pruebas E2E
 ```
 
 ---
 
-## Critical Rules
+## Reglas Críticas
 
-### ALWAYS:
-- Use TypeScript for all React components
-- Validate API inputs before database operations
-- Handle errors with try/except in Python
-- Use TailwindCSS for styling (no inline styles)
-- Follow conventional commit format
+### SIEMPRE:
+- Usar TypeScript para todos los componentes React
+- Validar entradas de API antes de operaciones de base de datos
+- Manejar errores con try/except en Python
+- Usar TailwindCSS para estilos (no estilos en línea)
+- Seguir el formato de commit convencional
 
-### NEVER:
-- Hardcode credentials or secrets
-- Expose stack traces to clients
-- Skip input validation
-- Use useMemo/useCallback in React 19 (compiler handles it)
-
----
-
-## Getting Started
-
-1. **Setup Skills**: `./agents/setup.sh`
-2. **Install Dependencies**: `npm install && pip install -r backend/requirements.txt`
-3. **Configure Database**: Create PostgreSQL database `muebleria_erp`
-4. **Start Development**: `npm run dev` + `python backend/run.py`
-5. **Read Documentation**: See [docs/guides/01-quick-start.md](docs/guides/01-quick-start.md)
+### NUNCA:
+- Hardcodear credenciales o secretos
+- Exponer stack traces a clientes
+- Omitir validación de entradas
+- Usar useMemo/useCallback en React 19 (el compilador lo maneja)
 
 ---
 
-## Documentation
+## Comenzando
 
-- [Quick Start](docs/guides/01-quick-start.md)
-- [Installation](docs/guides/02-installation.md)
-- [Configuration](docs/guides/03-configuration.md)
-- [AI Agents Introduction](docs/ai-agents/00-introduction.md)
-- [Skills Reference](docs/ai-agents/01-skills-reference.md)
+1. **Configurar Habilidades**: `./agents/setup.sh`
+2. **Instalar Dependencias**: `npm install && pip install -r backend/requirements.txt`
+3. **Configurar Base de Datos**: Crear base de datos PostgreSQL `muebleria_erp`
+4. **Iniciar Desarrollo**: `npm run dev` + `python backend/run.py`
+5. **Leer Documentación**: Ver [docs/guides/01-quick-start.md](docs/guides/01-quick-start.md)
+
+---
+
+## Documentación
+
+- [Inicio Rápido](docs/guides/01-quick-start.md)
+- [Instalación](docs/guides/02-installation.md)
+- [Configuración](docs/guides/03-configuration.md)
+- [Introducción a Agentes IA](docs/ai-agents/00-introduction.md)
+- [Referencia de Habilidades](docs/ai-agents/01-skills-reference.md)

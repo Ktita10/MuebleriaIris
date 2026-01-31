@@ -3,7 +3,7 @@
 > **Purpose**: Detailed technical specifications for agent behavior and skills invocation
 > **Audience**: AI Agents, Developers configuring agent behavior
 > **Status**: Active
-> **Version**: 1.0.0
+> **Version**: 2.0.0
 
 ---
 
@@ -40,11 +40,30 @@ The MuebleriaIris project uses a **skill-based agent orchestration system** to e
 │   ├── skills-map.json  (Machine-readable skill mapping)
 │   └── ENFORCEMENT.md   (Documentation for humans)
 ├── AGENTS.md            (Agent catalog & quick reference)
-└── agents/              (Individual skill implementations)
-    ├── muebleria-ui/
-    ├── muebleria-astro/
-    ├── muebleria-react/
-    └── ...
+└── agents/              (Individual skill implementations - DDD organized)
+    ├── infra_ops/       (Infrastructure & Operations)
+    │   ├── deployment/
+    │   ├── python-dev/
+    │   ├── error-handling/
+    │   ├── documentation/
+    │   └── git-workflow/
+    ├── domain_core/     (Business Logic)
+    │   ├── api-backend/
+    │   ├── database/
+    │   ├── auth-security/
+    │   └── external-integrations/
+    ├── frontend_ux/     (User Experience)
+    │   ├── ui-components/
+    │   ├── astro-pages/
+    │   ├── react-components/
+    │   ├── responsive-design/
+    │   └── forms-validation/
+    ├── quality_qa/      (Quality Assurance)
+    │   ├── testing-frontend/
+    │   └── testing-backend/
+    └── meta_skills/     (Meta-agents)
+        ├── skill-creator/
+        └── skill-sync/
 ```
 
 ### Reading Priority
@@ -491,6 +510,10 @@ When updating `.opencode/rules.md`:
 
 ### Version History
 
+- **v2.0.0** (2026-01-31): Applied Clean Architecture + DDD
+  - Reorganized agents/ into 5 DDD categories
+  - Updated all skill paths to hierarchical structure
+  - Improved discoverability and maintainability
 - **v1.0.0** (2026-01-20): Initial comprehensive technical rules
   - Established enforcement mechanism
   - Defined pattern matching algorithm
@@ -509,6 +532,6 @@ When updating `.opencode/rules.md`:
 
 ---
 
-**Last Updated**: 2026-01-20  
+**Last Updated**: 2026-01-31  
 **Maintained By**: MuebleriaIris Development Team  
 **Review Schedule**: Quarterly or when major patterns change

@@ -1,6 +1,6 @@
 # MuebleriaIris - Agent Execution Rules
-# Version: 1.1.0
-# Last Updated: 2026-01-22
+# Version: 2.0.0
+# Last Updated: 2026-01-31
 
 # ============================================================================
 # CRITICAL: MANDATORY SKILLS INVOCATION PROTOCOL
@@ -228,8 +228,9 @@ After implementing, verify you:
 
 - Full Rules: `.opencode/rules.md`
 - Skills Map JSON: `.opencode/skills-map.json`
-- Skills Directory: `agents/*/SKILL.md`
-- GitHub Copilot Skills: `.github/skills/*/SKILL.md`
+- Skills Directory (DDD): `agents/{category}/{skill-name}/SKILL.md`
+  - Categories: `infra_ops/`, `domain_core/`, `frontend_ux/`, `quality_qa/`, `meta_skills/`
+- GitHub Copilot Skills: `.github/skills/{skill-name}/SKILL.md` (symlinks)
 - Main Agent Config: `AGENTS.md`
 - Documentation: `docs/`
 
@@ -247,5 +248,6 @@ After implementing, verify you:
 
 ## VERSION HISTORY
 
+- v2.0.0 (2026-01-31): Applied Clean Architecture + DDD - agents/ reorganized into 5 categories
 - v1.1.0 (2026-01-22): Reorganized structure - skills/ renamed to agents/, docs consolidated
 - v1.0.0 (2026-01-20): Initial comprehensive rules system

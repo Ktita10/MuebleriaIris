@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "version": "1.1.0",
-  "lastUpdated": "2026-01-22",
-  "description": "Machine-readable skills mapping for MuebleriaIris agent orchestration",
+  "version": "2.0.0",
+  "lastUpdated": "2026-01-31",
+  "description": "Machine-readable skills mapping for MuebleriaIris agent orchestration - Clean Architecture + DDD",
   
   "skillsDirectory": "agents/",
   "copilotSymlinks": ".github/skills/",
@@ -181,112 +181,112 @@
   
   "skillMetadata": {
     "muebleria-astro": {
-      "category": "frontend",
+      "category": "frontend_ux",
       "framework": "Astro 5.16.4",
       "description": "Astro routing, Islands, SSR/SSG patterns",
-      "path": "agents/astro-pages/SKILL.md"
+      "path": "agents/frontend_ux/astro-pages/SKILL.md"
     },
     "muebleria-react": {
-      "category": "frontend",
+      "category": "frontend_ux",
       "framework": "React 19.2.1",
       "description": "React 19 hooks and component patterns",
-      "path": "agents/react-components/SKILL.md"
+      "path": "agents/frontend_ux/react-components/SKILL.md"
     },
     "muebleria-ui": {
-      "category": "frontend",
+      "category": "frontend_ux",
       "framework": "TailwindCSS 4.1.17",
       "description": "UI components and TailwindCSS 4 styling",
-      "path": "agents/ui-components/SKILL.md"
+      "path": "agents/frontend_ux/ui-components/SKILL.md"
     },
     "muebleria-forms": {
-      "category": "frontend",
+      "category": "frontend_ux",
       "framework": "react-hook-form + Zod",
       "description": "Form handling and validation",
-      "path": "agents/forms-validation/SKILL.md"
+      "path": "agents/frontend_ux/forms-validation/SKILL.md"
     },
     "muebleria-mobile": {
-      "category": "frontend",
+      "category": "frontend_ux",
       "framework": "TailwindCSS responsive",
       "description": "Responsive and mobile-first design",
-      "path": "agents/responsive-design/SKILL.md"
+      "path": "agents/frontend_ux/responsive-design/SKILL.md"
     },
     "muebleria-api": {
-      "category": "backend",
+      "category": "domain_core",
       "framework": "Flask REST API",
       "description": "Flask API endpoints and business logic",
-      "path": "agents/api-backend/SKILL.md"
+      "path": "agents/domain_core/api-backend/SKILL.md"
     },
     "muebleria-python": {
-      "category": "backend",
+      "category": "infra_ops",
       "framework": "Python 3.9+",
       "description": "Python coding standards",
-      "path": "agents/python-dev/SKILL.md"
+      "path": "agents/infra_ops/python-dev/SKILL.md"
     },
     "muebleria-db": {
-      "category": "backend",
+      "category": "domain_core",
       "framework": "PostgreSQL + SQLAlchemy",
       "description": "Database schema and migrations",
-      "path": "agents/database/SKILL.md"
+      "path": "agents/domain_core/database/SKILL.md"
     },
     "muebleria-security": {
-      "category": "backend",
+      "category": "domain_core",
       "framework": "JWT + RBAC",
       "description": "Authentication and authorization",
-      "path": "agents/auth-security/SKILL.md"
+      "path": "agents/domain_core/auth-security/SKILL.md"
     },
     "muebleria-errors": {
-      "category": "backend",
+      "category": "infra_ops",
       "framework": "Python logging",
       "description": "Error handling and logging",
-      "path": "agents/error-handling/SKILL.md"
+      "path": "agents/infra_ops/error-handling/SKILL.md"
     },
     "muebleria-integrations": {
-      "category": "backend",
+      "category": "domain_core",
       "framework": "External APIs",
       "description": "MercadoPago, email, external services",
-      "path": "agents/external-integrations/SKILL.md"
+      "path": "agents/domain_core/external-integrations/SKILL.md"
     },
     "muebleria-test-ui": {
-      "category": "testing",
+      "category": "quality_qa",
       "framework": "Playwright + RTL",
       "description": "Frontend testing (E2E and unit)",
-      "path": "agents/testing-frontend/SKILL.md"
+      "path": "agents/quality_qa/testing-frontend/SKILL.md"
     },
     "muebleria-test-api": {
-      "category": "testing",
+      "category": "quality_qa",
       "framework": "pytest",
       "description": "Backend testing",
-      "path": "agents/testing-backend/SKILL.md"
+      "path": "agents/quality_qa/testing-backend/SKILL.md"
     },
     "muebleria-docs": {
-      "category": "documentation",
+      "category": "infra_ops",
       "framework": "Markdown",
       "description": "Documentation standards",
-      "path": "agents/documentation/SKILL.md"
+      "path": "agents/infra_ops/documentation/SKILL.md"
     },
     "muebleria-deployment": {
-      "category": "devops",
+      "category": "infra_ops",
       "framework": "Docker + CI/CD",
       "description": "Deployment and infrastructure",
-      "path": "agents/deployment/SKILL.md"
+      "path": "agents/infra_ops/deployment/SKILL.md"
     },
     "pull-request": {
-      "category": "git",
+      "category": "infra_ops",
       "framework": "Git + GitHub",
       "description": "Pull request creation workflow",
-      "path": "agents/git-workflow/SKILL.md"
+      "path": "agents/infra_ops/git-workflow/SKILL.md"
     },
     "skill-creator": {
-      "category": "meta",
+      "category": "meta_skills",
       "framework": "Agent Skills Spec",
       "description": "Create new agent skills",
-      "path": "agents/skill-creator/SKILL.md"
+      "path": "agents/meta_skills/skill-creator/SKILL.md"
     },
     "skill-sync": {
-      "category": "meta",
+      "category": "meta_skills",
       "framework": "Shell + Markdown",
       "description": "Sync skill metadata to AGENTS.md",
-      "path": "agents/skill-sync/SKILL.md"
+      "path": "agents/meta_skills/skill-sync/SKILL.md"
     }
   },
   
