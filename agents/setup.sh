@@ -1,5 +1,5 @@
 #!/bin/bash
-# Setup AI Skills for Prowler development
+# Setup AI Skills for MuebleriaIris development
 # Configures AI coding assistants that follow agentskills.io standard:
 #   - Claude Code: .claude/agents/ symlink + CLAUDE.md copies
 #   - Gemini CLI: .gemini/agents/ symlink + GEMINI.md copies
@@ -40,7 +40,7 @@ SETUP_COPILOT=false
 show_help() {
   echo "Usage: $0 [OPTIONS]"
   echo ""
-  echo "Configure AI coding assistants for Prowler development."
+  echo "Configure AI coding assistants for MuebleriaIris development."
   echo ""
   echo "Options:"
   echo "  --all       Configure all AI assistants"
@@ -231,12 +231,12 @@ done
 # MAIN
 # =============================================================================
 
-echo "🤖 Prowler AI Skills Setup"
-echo "=========================="
+echo "🤖 MuebleriaIris AI Skills Setup"
+echo "================================="
 echo ""
 
-# Count skills
-SKILL_COUNT=$(find "$SKILLS_SOURCE" -maxdepth 2 -name "SKILL.md" | wc -l | tr -d ' ')
+# Count skills (DDD structure: agents/category/skill-name/SKILL.md = maxdepth 3)
+SKILL_COUNT=$(find "$SKILLS_SOURCE" -maxdepth 3 -name "SKILL.md" | wc -l | tr -d ' ')
 
 if [ "$SKILL_COUNT" -eq 0 ]; then
   echo -e "${RED}No skills found in $SKILLS_SOURCE${NC}"
@@ -296,9 +296,9 @@ echo ""
 echo -e "${GREEN}✅ Successfully configured $SKILL_COUNT AI skills!${NC}"
 echo ""
 echo "Configured:"
-[ "$SETUP_CLAUDE" = true ] && echo "  • Claude Code:    .claude/agents/ + CLAUDE.md"
-[ "$SETUP_CODEX" = true ] && echo "  • Codex (OpenAI): .codex/agents/ + AGENTS.md (native)"
-[ "$SETUP_GEMINI" = true ] && echo "  • Gemini CLI:     .gemini/agents/ + GEMINI.md"
+[ "$SETUP_CLAUDE" = true ] && echo "  • Claude Code:    .claude/skills/ + CLAUDE.md"
+[ "$SETUP_CODEX" = true ] && echo "  • Codex (OpenAI): .codex/skills/ + AGENTS.md (native)"
+[ "$SETUP_GEMINI" = true ] && echo "  • Gemini CLI:     .gemini/skills/ + GEMINI.md"
 [ "$SETUP_COPILOT" = true ] && echo "  • GitHub Copilot: .github/copilot-instructions.md"
 echo ""
 echo -e "${BLUE}Note: Restart your AI assistant to load the skills.${NC}"
