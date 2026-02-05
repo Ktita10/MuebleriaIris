@@ -1,5 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import { formatPrice } from "../lib/formatters";
 
 // Fake user data - replace with real data from auth store
 const user = {
@@ -17,14 +18,6 @@ const user = {
   totalOrders: 12,
   totalSpent: 456000,
 };
-
-function formatPrice(price: number): string {
-  return new Intl.NumberFormat("es-AR", {
-    style: "currency",
-    currency: "ARS",
-    minimumFractionDigits: 0,
-  }).format(price);
-}
 ---
 
 <Layout title="Mi Cuenta - MuebleriaIris">
@@ -62,7 +55,7 @@ function formatPrice(price: number): string {
               </a>
               <a
                 href="/mis-pedidos"
-                class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+                class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-600 rounded-lg"
               >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
@@ -71,7 +64,7 @@ function formatPrice(price: number): string {
               </a>
               <a
                 href="/favoritos"
-                class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+                class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-600 rounded-lg"
               >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
@@ -80,7 +73,7 @@ function formatPrice(price: number): string {
               </a>
               <a
                 href="#"
-                class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-red-600 rounded-lg"
               >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -116,7 +109,7 @@ function formatPrice(price: number): string {
           <div class="bg-white rounded-xl shadow-sm p-6">
             <div class="flex items-center justify-between mb-6">
               <h2 class="text-xl font-bold text-gray-900">Informacion Personal</h2>
-              <button class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary-600 hover:bg-primary-50 rounded-lg transition-colors">
+              <button class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary-600 rounded-lg">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
@@ -148,7 +141,7 @@ function formatPrice(price: number): string {
           <div class="bg-white rounded-xl shadow-sm p-6">
             <div class="flex items-center justify-between mb-6">
               <h2 class="text-xl font-bold text-gray-900">Direccion de Envio</h2>
-              <button class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary-600 hover:bg-primary-50 rounded-lg transition-colors">
+              <button class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary-600 rounded-lg">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
@@ -186,7 +179,7 @@ function formatPrice(price: number): string {
                   <h3 class="font-medium text-gray-900">Contraseña</h3>
                   <p class="text-sm text-gray-500">Ultima modificacion: hace 3 meses</p>
                 </div>
-                <button class="px-4 py-2 text-sm font-medium text-primary-600 hover:bg-primary-50 rounded-lg transition-colors">
+                <button class="px-4 py-2 text-sm font-medium text-primary-600 rounded-lg">
                   Cambiar
                 </button>
               </div>
@@ -196,7 +189,7 @@ function formatPrice(price: number): string {
                   <h3 class="font-medium text-gray-900">Autenticacion en Dos Pasos</h3>
                   <p class="text-sm text-gray-500">Agrega una capa adicional de seguridad</p>
                 </div>
-                <button class="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
+                <button class="px-4 py-2 text-sm font-medium text-gray-600 rounded-lg">
                   Activar
                 </button>
               </div>
@@ -206,7 +199,7 @@ function formatPrice(price: number): string {
                   <h3 class="font-medium text-gray-900">Sesiones Activas</h3>
                   <p class="text-sm text-gray-500">Gestiona tus dispositivos conectados</p>
                 </div>
-                <button class="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
+                <button class="px-4 py-2 text-sm font-medium text-gray-600 rounded-lg">
                   Ver
                 </button>
               </div>
@@ -219,7 +212,7 @@ function formatPrice(price: number): string {
             <p class="text-sm text-gray-600 mb-4">
               Una vez que elimines tu cuenta, no hay vuelta atras. Por favor, esta seguro.
             </p>
-            <button class="px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 border border-red-300 rounded-lg transition-colors">
+            <button class="px-4 py-2 text-sm font-medium text-red-600 border border-red-300 rounded-lg">
               Eliminar mi cuenta
             </button>
           </div>

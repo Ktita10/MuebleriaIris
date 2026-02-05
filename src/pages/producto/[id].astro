@@ -1,7 +1,9 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import ProductDetail from "../../components/catalog/ProductDetail";
-import { API_BASE, API_BASE_URL, getImageUrl } from "../../lib/api";
+import { API_BASE_URL, getImageUrl } from "../../lib/api";
+import { formatPrice } from "../../lib/formatters";
+import type { ProductoAPI, ProductoDetalle, ProductoRelacionado } from "../../types/product";
 
 // Generate static paths for all products
 export async function getStaticPaths() {
@@ -10,13 +12,12 @@ export async function getStaticPaths() {
   try {
     // Fetch all products from API during build
     const response = await fetch(`${apiUrl}/api/productos`);
-    const productos = await response.json();
+    const productos: ProductoAPI[] = await response.json();
     
-    return productos.map((producto: any) => ({
+    return productos.map((producto) => ({
       params: { id: producto.id.toString() }
     }));
-  } catch (error) {
-    console.error('Error fetching products for static paths:', error);
+  } catch {
     // Fallback to some default IDs
     return Array.from({ length: 20 }, (_, i) => ({
       params: { id: (i + 1).toString() }
@@ -28,37 +29,40 @@ export async function getStaticPaths() {
 const { id } = Astro.params;
 
 // Fetch product from API
-let product;
+let product: ProductoDetalle;
 try {
   const response = await fetch(`${API_BASE_URL}/productos/${id}`);
-  const productData = await response.json();
+  const productData: ProductoAPI = await response.json();
+  
+  // Get imagen_principal URL
+  const imagenPrincipalUrl = getImageUrl(productData.imagen_principal);
   
   // Transform API data to component format
+  const imagenes = productData.imagenes?.map((img) => getImageUrl(img.url)) || [];
+  
+  // If no images but has imagen_principal, use it
+  if (imagenes.length === 0 && imagenPrincipalUrl) {
+    imagenes.push(imagenPrincipalUrl);
+  }
+  
   product = {
     id: productData.id,
     nombre: productData.nombre,
     precio: productData.precio,
     descripcion: productData.descripcion || 'Sin descripción',
-    categoria: productData.categoria,
-    material: productData.material,
+    categoria: productData.categoria || 'General',
+    material: productData.material || 'N/A',
     dimensiones: {
       alto: productData.medidas?.alto || 0,
       ancho: productData.medidas?.ancho || 0,
       profundidad: productData.medidas?.profundidad || 0
     },
     colores: ['Estándar'], // TODO: Implement colors in backend
-    imagenes: productData.imagenes?.map((img: any) => getImageUrl(img.url)) || [],
+    imagenes,
     stock: productData.stock || 0,
-    sku: productData.sku,
-    imagen_principal: getImageUrl(productData.imagen_principal)
+    sku: productData.sku || 'N/A',
   };
-  
-  // If no images but has imagen_principal, use it
-  if (product.imagenes.length === 0 && product.imagen_principal) {
-    product.imagenes = [product.imagen_principal];
-  }
-} catch (error) {
-  console.error('Error fetching product:', error);
+} catch {
   // Fallback product
   product = {
     id: parseInt(id || '1'),
@@ -76,22 +80,22 @@ try {
 }
 
 // Related products (same category)
-let relatedProducts: any[] = [];
+let relatedProducts: ProductoRelacionado[] = [];
 try {
   const response = await fetch(`${API_BASE_URL}/productos`);
-  const allProductos = await response.json();
+  const allProductos: ProductoAPI[] = await response.json();
   relatedProducts = allProductos
-    .filter((p: any) => p.categoria === product.categoria && p.id !== product.id)
+    .filter((p) => p.categoria === product.categoria && p.id !== product.id)
     .slice(0, 4)
-    .map((p: any) => ({
+    .map((p) => ({
       id: p.id,
       nombre: p.nombre,
       precio: p.precio,
       categoria: p.categoria,
       imagen_principal: getImageUrl(p.imagen_principal)
     }));
-} catch (error) {
-  console.error('Error fetching related products:', error);
+} catch {
+  // relatedProducts remains empty
 }
 ---
 
@@ -128,12 +132,12 @@ try {
               Productos Relacionados
             </h2>
             <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {relatedProducts.map((related: any) => (
+              {relatedProducts.map((related) => (
                 <a
                   href={`/producto/${related.id}`}
-                  class="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-gray-100"
+                  class="group bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100"
                 >
-                  <div class="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                  <div class="aspect-square bg-linear-to-br from-gray-100 to-gray-200 flex items-center justify-center">
                     {related.imagen_principal ? (
                       <img 
                         src={related.imagen_principal} 
@@ -157,15 +161,11 @@ try {
                     )}
                   </div>
                   <div class="p-4">
-                    <h3 class="font-semibold text-gray-900 group-hover:text-primary-600 transition-colors">
+                    <h3 class="font-semibold text-gray-900">
                       {related.nombre}
                     </h3>
                     <p class="text-primary-600 font-bold mt-1">
-                      {new Intl.NumberFormat("es-AR", {
-                        style: "currency",
-                        currency: "ARS",
-                        minimumFractionDigits: 0,
-                      }).format(related.precio)}
+                      {formatPrice(related.precio)}
                     </p>
                   </div>
                 </a>

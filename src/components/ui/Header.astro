@@ -1,13 +1,9 @@
 ---
 /**
- * Header principal de la aplicación
+ * Header principal - Iris Muebles
  *
- * - Proporciona la navegación global (desktop/mobile) y acceso rápido a carrito, login/usuario y búsqueda.
- * - Implementa menú responsive, menú de categorías, y acciones rápidas.
- * - Incorpora Islands React para el carrito (<CartButton />) y el menú de usuario (<UserMenu />).
- * - El Header está presente en todas las páginas al usar el Layout general.
- *
- * Objetivo: asegurar navegación clara y acceso inmediato a secciones clave.
+ * Navegacion global con logo, menu desktop/mobile, carrito y usuario.
+ * Estilo: Blanco limpio con acentos naranja
  */
 import CartButton from "../cart/CartButton";
 import UserMenu from "../auth/UserMenu";
@@ -16,7 +12,6 @@ import UserMenu from "../auth/UserMenu";
 const navItems = [
   { label: "Inicio", href: "/" },
   { label: "Catalogo", href: "/catalogo" },
-  { label: "Nosotros", href: "/nosotros" },
   { label: "Contacto", href: "/contacto" },
 ];
 
@@ -30,13 +25,13 @@ const categories = [
 ];
 ---
 
-<header class="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+<header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100">
   <div class="container">
     <nav class="flex items-center justify-between h-16 lg:h-20">
       <!-- Logo -->
-      <a href="/" class="flex items-center gap-2 group">
+      <a href="/" class="flex items-center gap-3 group">
         <div
-          class="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center"
+          class="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/20 group-hover:shadow-orange-500/30 transition-shadow"
         >
           <svg
             class="w-6 h-6 text-white"
@@ -53,9 +48,9 @@ const categories = [
           </svg>
         </div>
         <span
-          class="text-xl font-bold text-gray-900 group-hover:text-primary-600 transition-colors"
+          class="text-xl font-bold text-gray-900 group-hover:text-orange-600 transition-colors"
         >
-          Muebleria Iris
+          Iris Muebles
         </span>
       </a>
 
@@ -65,7 +60,7 @@ const categories = [
           navItems.map((item) => (
             <a
               href={item.href}
-              class="text-gray-600 hover:text-primary-600 font-medium transition-colors"
+              class="text-gray-600 hover:text-orange-600 font-medium transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-orange-500 after:transition-all hover:after:w-full"
             >
               {item.label}
             </a>
@@ -75,10 +70,10 @@ const categories = [
         <!-- Categories Dropdown -->
         <div class="relative group">
           <button
-            class="flex items-center gap-1 text-gray-600 hover:text-primary-600 font-medium transition-colors"
+            class="flex items-center gap-1 text-gray-600 hover:text-orange-600 font-medium transition-colors"
           >
             Categorias
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -90,13 +85,13 @@ const categories = [
             class="absolute top-full left-0 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200"
           >
             <div
-              class="bg-white rounded-lg shadow-lg border border-gray-200 py-2 min-w-[180px]"
+              class="bg-white rounded-xl shadow-xl border border-gray-100 py-2 min-w-[180px]"
             >
               {
                 categories.map((cat) => (
                   <a
                     href={cat.href}
-                    class="block px-4 py-2 text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-colors"
+                    class="block px-4 py-2.5 text-gray-600 hover:bg-orange-50 hover:text-orange-600 transition-colors"
                   >
                     {cat.label}
                   </a>
@@ -108,21 +103,7 @@ const categories = [
       </div>
 
       <!-- Right Actions -->
-      <div class="flex items-center gap-4">
-        <!-- Search Button -->
-        <button
-          class="p-2 text-gray-600 hover:text-primary-600 hover:bg-gray-100 rounded-lg transition-colors"
-          aria-label="Buscar productos"
-        >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-          </svg>
-        </button>
-
+      <div class="flex items-center gap-3">
         <!-- Cart Button (React Island) -->
         <CartButton client:load />
 
@@ -132,7 +113,7 @@ const categories = [
         <!-- Mobile Menu Button -->
         <button
           id="mobile-menu-btn"
-          class="lg:hidden p-2 text-gray-600 hover:text-primary-600 hover:bg-gray-100 rounded-lg transition-colors"
+          class="lg:hidden p-2 text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-xl transition-colors"
           aria-label="Abrir menu"
           aria-expanded="false"
         >
@@ -171,12 +152,12 @@ const categories = [
     class="lg:hidden fixed inset-0 top-16 bg-white z-40 transform translate-x-full transition-transform duration-300 ease-in-out"
   >
     <div class="container py-6">
-      <nav class="flex flex-col gap-4">
+      <nav class="flex flex-col gap-2">
         {
           navItems.map((item) => (
             <a
               href={item.href}
-              class="text-lg text-gray-700 hover:text-primary-600 font-medium py-2 border-b border-gray-100"
+              class="text-lg text-gray-700 hover:text-orange-600 font-medium py-3 px-4 rounded-xl hover:bg-orange-50 transition-colors"
             >
               {item.label}
             </a>
@@ -184,8 +165,8 @@ const categories = [
         }
 
         <!-- Mobile Categories -->
-        <div class="py-2">
-          <p class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">
+        <div class="py-4 mt-2">
+          <p class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3 px-4">
             Categorias
           </p>
           <div class="grid grid-cols-2 gap-2">
@@ -193,7 +174,7 @@ const categories = [
               categories.map((cat) => (
                 <a
                   href={cat.href}
-                  class="px-4 py-3 bg-gray-50 rounded-lg text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors text-center"
+                  class="px-4 py-3 bg-gray-50 rounded-xl text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors text-center font-medium"
                 >
                   {cat.label}
                 </a>
@@ -205,7 +186,7 @@ const categories = [
         <!-- Mobile Login -->
         <a
           href="/login"
-          class="flex items-center justify-center gap-2 mt-4 px-6 py-3 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 transition-colors"
+          class="flex items-center justify-center gap-2 mt-4 px-6 py-3 bg-orange-500 text-white rounded-xl font-semibold hover:bg-orange-600 transition-colors shadow-lg shadow-orange-500/25"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -273,16 +254,3 @@ const categories = [
     }
   });
 </script>
-
-<!--
-==================================================
-Flujo de trabajo y comunicación:
-
-- El Header aparece en todas las páginas al usar el Layout principal.
-- Navegación: Llama a rutas Astro como '/', '/catalogo', '/nosotros', etc.
-- Menú de categorías: lista categorías y filtra el catálogo según el caso.
-- Botón de carrito y menú de usuario son islands React, lo que permite su funcionalidad interactiva y estado global (cart/auth).
-- Acciones móviles: activa/desactiva el menú con JS vanilla, y cierra el menú al navegar (mejora UX).
-- Se comunica principalmente con el Layout y con los stores globales de carrito y usuario para mostrar el estado/datos.
-==================================================
--->

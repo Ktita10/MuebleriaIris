@@ -198,8 +198,8 @@ export default function CheckoutForm() {
       // Create order using the real API
       const ordenData = {
         id_cliente: user.cliente_id,
-        id_usuarios: user.id, // The logged-in user who is placing the order
-        productos: items.map((item) => ({
+        id_vendedor: user.id, // The logged-in user who is placing the order
+        items: items.map((item) => ({
           id_producto: item.id,
           cantidad: item.cantidad,
         })),
@@ -251,7 +251,7 @@ export default function CheckoutForm() {
           Tu pedido ha sido recibido y esta siendo procesado.
         </p>
         {orderId && (
-          <p className="text-lg font-semibold text-primary-600 mb-6">
+          <p className="text-lg font-semibold text-orange-500 mb-6">
             Numero de orden: {orderId}
           </p>
         )}
@@ -261,13 +261,13 @@ export default function CheckoutForm() {
         <div className="flex gap-4 justify-center">
           <a
             href="/"
-            className="inline-flex items-center justify-center px-6 py-3 bg-primary-600 text-white font-semibold rounded-xl hover:bg-primary-700 transition-colors"
+            className="inline-flex items-center justify-center px-6 py-3 bg-orange-500 text-white font-semibold rounded-xl"
           >
             Volver al inicio
           </a>
           <a
             href="/catalogo"
-            className="inline-flex items-center justify-center px-6 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-xl hover:border-primary-600 hover:text-primary-600 transition-colors"
+            className="inline-flex items-center justify-center px-6 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-xl"
           >
             Seguir comprando
           </a>
@@ -281,7 +281,7 @@ export default function CheckoutForm() {
     return (
       <div className="bg-white rounded-2xl p-8 text-center">
         <svg
-          className="w-16 h-16 mx-auto text-primary-400 mb-4"
+            className="w-16 h-16 mx-auto text-orange-400 mb-4"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -302,13 +302,13 @@ export default function CheckoutForm() {
         <div className="flex gap-4 justify-center">
           <a
             href="/login?redirect=/checkout"
-            className="inline-flex items-center justify-center px-6 py-3 bg-primary-600 text-white font-semibold rounded-xl hover:bg-primary-700 transition-colors"
+            className="inline-flex items-center justify-center px-6 py-3 bg-orange-500 text-white font-semibold rounded-xl"
           >
             Iniciar Sesion
           </a>
           <a
             href="/registro?redirect=/checkout"
-            className="inline-flex items-center justify-center px-6 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-xl hover:border-primary-600 hover:text-primary-600 transition-colors"
+            className="inline-flex items-center justify-center px-6 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-xl"
           >
             Crear Cuenta
           </a>
@@ -341,7 +341,7 @@ export default function CheckoutForm() {
         </p>
         <a
           href="/catalogo"
-          className="inline-flex items-center justify-center px-6 py-3 bg-primary-600 text-white font-semibold rounded-xl hover:bg-primary-700 transition-colors"
+          className="inline-flex items-center justify-center px-6 py-3 bg-orange-500 text-white font-semibold rounded-xl"
         >
           Ir al catalogo
         </a>
@@ -354,7 +354,7 @@ export default function CheckoutForm() {
       {/* Contact Information */}
       <section className="bg-white rounded-2xl p-6">
         <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-          <span className="w-8 h-8 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center text-sm font-bold">
+          <span className="w-8 h-8 bg-orange-100 text-orange-500 rounded-full flex items-center justify-center text-sm font-bold">
             1
           </span>
           Informacion de Contacto
@@ -386,7 +386,7 @@ export default function CheckoutForm() {
       {/* Shipping Information */}
       <section className="bg-white rounded-2xl p-6">
         <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-          <span className="w-8 h-8 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center text-sm font-bold">
+          <span className="w-8 h-8 bg-orange-100 text-orange-500 rounded-full flex items-center justify-center text-sm font-bold">
             2
           </span>
           Direccion de Envio
@@ -475,7 +475,7 @@ export default function CheckoutForm() {
       {/* Payment Method */}
       <section className="bg-white rounded-2xl p-6">
         <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-          <span className="w-8 h-8 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center text-sm font-bold">
+          <span className="w-8 h-8 bg-orange-100 text-orange-500 rounded-full flex items-center justify-center text-sm font-bold">
             3
           </span>
           Metodo de Pago
@@ -484,7 +484,7 @@ export default function CheckoutForm() {
           <label
             className={`relative flex flex-col items-center p-4 border-2 rounded-xl cursor-pointer transition-all ${
               formData.paymentMethod === "card"
-                ? "border-primary-600 bg-primary-50"
+                ? "border-orange-500 bg-orange-50"
                 : "border-gray-200 hover:border-gray-300"
             }`}
           >
@@ -499,7 +499,7 @@ export default function CheckoutForm() {
             <svg
               className={`w-8 h-8 mb-2 ${
                 formData.paymentMethod === "card"
-                  ? "text-primary-600"
+                  ? "text-orange-500"
                   : "text-gray-400"
               }`}
               fill="none"
@@ -520,7 +520,7 @@ export default function CheckoutForm() {
           <label
             className={`relative flex flex-col items-center p-4 border-2 rounded-xl cursor-pointer transition-all ${
               formData.paymentMethod === "transfer"
-                ? "border-primary-600 bg-primary-50"
+                ? "border-orange-500 bg-orange-50"
                 : "border-gray-200 hover:border-gray-300"
             }`}
           >
@@ -535,7 +535,7 @@ export default function CheckoutForm() {
             <svg
               className={`w-8 h-8 mb-2 ${
                 formData.paymentMethod === "transfer"
-                  ? "text-primary-600"
+                  ? "text-orange-500"
                   : "text-gray-400"
               }`}
               fill="none"
@@ -554,10 +554,10 @@ export default function CheckoutForm() {
           </label>
 
           <label
-            className={`relative flex flex-col items-center p-4 border-2 rounded-xl cursor-pointer transition-all ${
+            className={`relative flex flex-col items-center p-4 border-2 rounded-xl cursor-pointer ${
               formData.paymentMethod === "mercadopago"
-                ? "border-primary-600 bg-primary-50"
-                : "border-gray-200 hover:border-gray-300"
+                ? "border-orange-500 bg-orange-50"
+                : "border-gray-200"
             }`}
           >
             <input
@@ -571,7 +571,7 @@ export default function CheckoutForm() {
             <svg
               className={`w-8 h-8 mb-2 ${
                 formData.paymentMethod === "mercadopago"
-                  ? "text-primary-600"
+                  ? "text-orange-500"
                   : "text-gray-400"
               }`}
               fill="none"
@@ -594,7 +594,7 @@ export default function CheckoutForm() {
       {/* Notes */}
       <section className="bg-white rounded-2xl p-6">
         <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-          <span className="w-8 h-8 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center text-sm font-bold">
+          <span className="w-8 h-8 bg-orange-100 text-orange-500 rounded-full flex items-center justify-center text-sm font-bold">
             4
           </span>
           Notas (opcional)
@@ -605,7 +605,7 @@ export default function CheckoutForm() {
           placeholder="Instrucciones especiales para la entrega, color preferido, etc."
           value={formData.notes}
           onChange={handleChange}
-          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors resize-none"
+          className="w-full px-4 py-3 border border-gray-300 rounded-xl resize-none"
         />
       </section>
 
@@ -622,25 +622,19 @@ export default function CheckoutForm() {
           type="submit"
           disabled={isSubmitting}
           className={`
-            group relative w-full overflow-hidden
+            w-full
             py-5 px-8 rounded-2xl
             font-bold text-lg
-            transform transition-all duration-300
             ${isSubmitting 
-              ? 'bg-gradient-to-r from-gray-400 to-gray-500 cursor-wait scale-95' 
-              : 'bg-gradient-to-r from-primary-600 via-primary-700 to-primary-600 hover:shadow-2xl hover:shadow-primary-500/50 hover:scale-[1.02] active:scale-95'
+              ? 'bg-linear-to-r from-gray-400 to-gray-500 cursor-wait'
+              : 'bg-linear-to-r from-orange-500 via-orange-600 to-orange-500'
             }
             text-white
             disabled:cursor-not-allowed
           `}
         >
-          {/* Animated Background Effect */}
-          {!isSubmitting && (
-            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
-          )}
-          
           {/* Button Content */}
-          <span className="relative flex items-center justify-center gap-3">
+          <span className="flex items-center justify-center gap-3">
             {isSubmitting ? (
               <>
                 <svg className="animate-spin h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -651,21 +645,16 @@ export default function CheckoutForm() {
               </>
             ) : (
               <>
-                <svg className="w-6 h-6 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
                 </svg>
-                <span className="tracking-wide">Finalizar Compra</span>
-                <svg className="w-6 h-6 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <span>Finalizar Compra</span>
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
               </>
             )}
           </span>
-
-          {/* Pulsating Ring Effect */}
-          {!isSubmitting && (
-            <span className="absolute inset-0 rounded-2xl bg-primary-600 opacity-0 group-hover:opacity-100 group-hover:animate-ping"></span>
-          )}
         </button>
         
         {/* Secure Badge */}
@@ -679,11 +668,11 @@ export default function CheckoutForm() {
 
       <p className="text-center text-sm text-gray-500">
         Al confirmar, aceptas nuestros{" "}
-        <a href="/terminos" className="text-primary-600 hover:underline font-medium">
+        <a href="/terminos" className="text-orange-500 font-medium">
           terminos y condiciones
         </a>{" "}
         y{" "}
-        <a href="/privacidad" className="text-primary-600 hover:underline font-medium">
+        <a href="/privacidad" className="text-orange-500 font-medium">
           politica de privacidad
         </a>
         .

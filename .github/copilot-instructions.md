@@ -1,126 +1,118 @@
-# MuebleriaIris - GitHub Copilot Instructions
-
-Complete ERP system for furniture store management with AI agent skills support.
-
-## Tech Stack
-
-| Component | Technologies |
-|-----------|-------------|
-| Frontend  | Astro 5, React 19, TailwindCSS 4, TypeScript |
-| Backend   | Flask, SQLAlchemy, PostgreSQL, Python 3.9+ |
-| Testing   | pytest, Playwright, React Testing Library |
-
+---
+applyTo: '**'
 ---
 
-## Agent Skills
+# MuebleriaIris - Instrucciones para Agentes de IA
 
-Skills are available in `.github/skills/` directory. Each skill contains specialized patterns and instructions.
+Sistema ERP de mueblería con frontend Astro/React y backend Flask.
 
-### Available Skills
+## Stack Tecnológico
 
-| Skill | Description |
+| Capa | Tecnología | Versión |
+|------|------------|---------|
+| Frontend | Astro + React + TailwindCSS | 5 / 19 / 4 |
+| Backend | Flask + SQLAlchemy + PostgreSQL | 3.x / 2.x |
+| Testing | Playwright + pytest + RTL | Latest |
+| Lenguajes | TypeScript + Python | 5.x / 3.9+ |
+
+## Skills Disponibles
+
+Las skills están en `github/skills/`. Úsalas según el contexto:
+
+### Frontend
+
+| Skill | Cuándo Usar |
 |-------|-------------|
-| `muebleria-ui` | Astro + React + TailwindCSS patterns |
-| `muebleria-astro` | Astro 5 routing, Islands, SSR patterns |
-| `muebleria-react` | React 19 hooks and components |
-| `muebleria-forms` | react-hook-form + Zod validation |
-| `muebleria-mobile` | Responsive design patterns |
-| `muebleria-api` | Flask REST API patterns |
-| `muebleria-python` | Python development standards |
-| `muebleria-security` | JWT auth, RBAC, password hashing |
-| `muebleria-errors` | Error handling and logging |
-| `muebleria-integrations` | External APIs (MercadoPago, emails) |
-| `muebleria-db` | PostgreSQL schema and migrations |
-| `muebleria-test-ui` | Frontend testing (Playwright, RTL) |
-| `muebleria-test-api` | Backend testing (pytest) |
-| `muebleria-docs` | Documentation standards |
-| `muebleria-deployment` | Docker, CI/CD, deployment |
-| `pull-request` | Git workflow and PR conventions |
+| [astro-islands](../github/skills/astro-islands/SKILL.md) | Componentes Astro, Islands Architecture, directivas client:* |
+| [tailwind-patterns](../github/skills/tailwind-patterns/SKILL.md) | Estilos, responsive design, clases utilitarias |
+| [react-best-practices](../github/skills/react-best-practices/SKILL.md) | Componentes React, optimización, hooks |
+| [frontend-design](../github/skills/frontend-design/SKILL.md) | Diseño creativo, evitar "AI slop" |
 
----
+### Backend
 
-## When to Use Skills
+| Skill | Cuándo Usar |
+|-------|-------------|
+| [flask-api](../github/skills/flask-api/SKILL.md) | Rutas, blueprints, API REST |
+| [python-backend](../github/skills/python-backend/SKILL.md) | Código Python, type hints, patrones |
+| [auth-security](../github/skills/auth-security/SKILL.md) | JWT, autenticación, protección de rutas |
+| [sqlalchemy-database](../github/skills/sqlalchemy-database/SKILL.md) | Modelos, consultas, migraciones |
 
-| Action | Skill |
-|--------|-------|
-| Creating UI components | `muebleria-ui` |
-| Astro pages and layouts | `muebleria-astro` |
-| React components | `muebleria-react` |
-| Forms with validation | `muebleria-forms` |
-| Responsive design | `muebleria-mobile` |
-| API endpoints | `muebleria-api` |
-| Authentication | `muebleria-security` |
-| Database models | `muebleria-db` |
-| Error handling | `muebleria-errors` |
-| External integrations | `muebleria-integrations` |
-| Frontend tests | `muebleria-test-ui` |
-| Backend tests | `muebleria-test-api` |
-| Documentation | `muebleria-docs` |
-| Pull requests | `pull-request` |
+### Desarrollo General
 
----
+| Skill | Cuándo Usar |
+|-------|-------------|
+| [refactor](../github/skills/refactor/SKILL.md) | Mejorar código existente sin cambiar comportamiento |
+| [git-commit](../github/skills/git-commit/SKILL.md) | Commits con Conventional Commits |
+| [webapp-testing](../github/skills/webapp-testing/SKILL.md) | Testing E2E con Playwright |
+| [web-designer-reviewer](../github/skills/web-designer-reviewer/SKILL.md) | Revisión visual de UI |
+| [web-design-guidelines](../github/skills/web-design-guidelines/SKILL.md) | Auditoría de UI según Vercel guidelines |
 
-## Project Structure
+### Meta-Skills
+
+| Skill | Cuándo Usar |
+|-------|-------------|
+| [skill-creator](../github/skills/skill-creator/SKILL.md) | Guía para crear nuevas skills |
+| [Skill-template](../github/skills/Skill-template/SKILL.md) | Template para nuevas skills |
+
+## Estructura del Proyecto
 
 ```
 MuebleriaIris/
-├── src/                    # Frontend (Astro + React)
-│   ├── components/         # UI and feature components
-│   ├── pages/              # File-based routing
-│   ├── layouts/            # Page layouts
-│   ├── stores/             # Global state
-│   └── lib/                # Utilities
-│
-├── backend/                # API Server (Flask)
-│   ├── app/
-│   │   ├── routes/         # API endpoints
-│   │   ├── services/       # Business logic
-│   │   └── models.py       # Database models
-│   └── config.py
-│
-├── agents/                 # AI Agent Skills (source)
-├── .github/skills/         # GitHub Copilot (symlinks)
-├── docs/                   # Documentation
-└── public/                 # Static assets
+├── src/                          # Frontend Astro/React
+│   ├── components/
+│   │   ├── admin/                # Managers de administración
+│   │   ├── auth/                 # Login, Register, UserMenu
+│   │   ├── cart/                 # Carrito de compras
+│   │   ├── catalog/              # Catálogo de productos
+│   │   ├── home/                 # Componentes de landing
+│   │   └── ui/                   # Componentes reutilizables
+│   ├── layouts/
+│   ├── pages/
+│   └── lib/
+├── backend/
+│   └── app/
+│       ├── routes/               # API endpoints (Flask blueprints)
+│       ├── services/             # Lógica de negocio
+│       ├── utils/                # Helpers y validadores
+│       ├── models.py             # Modelos SQLAlchemy
+│       └── security.py           # JWT y autenticación
+└── github/skills/                # Skills para agentes IA
 ```
 
----
+## Convenciones
 
-## Critical Rules
+### Código
 
-### ALWAYS:
-- Use TypeScript for all React components
-- Validate API inputs before database operations
-- Handle errors with try/except in Python
-- Use TailwindCSS for styling (no inline styles)
-- Follow conventional commit format
+- **TypeScript**: Strict mode, interfaces sobre types
+- **Python**: Type hints obligatorios, Black formatter
+- **Componentes**: PascalCase, un componente por archivo
+- **Hooks**: Prefijo `use`, en `src/lib/hooks/`
+- **API**: RESTful, respuestas JSON consistentes
 
-### NEVER:
-- Hardcode credentials or secrets
-- Expose stack traces to clients
-- Skip input validation
-- Use useMemo/useCallback in React 19 (compiler handles it)
+### Commits
 
----
-
-## Commands
-
-```bash
-# Frontend
-npm run dev              # Start dev server (localhost:4321)
-npm run build            # Build for production
-
-# Backend
-python backend/run.py    # Start API server (localhost:5000)
-
-# Tests
-npm test                 # Frontend tests
-pytest backend/tests/    # Backend tests
+Usar Conventional Commits (ver skill `git-commit`):
+```
+feat(catalog): add product filtering
+fix(cart): resolve quantity update bug
+refactor(admin): extract table component
 ```
 
----
+### Testing
 
-## Documentation
+- Frontend: Playwright para E2E, RTL para componentes
+- Backend: pytest con fixtures, coverage > 80%
 
-See [AGENTS.md](../AGENTS.md) for complete skills documentation.
-See [docs/](../docs/) for guides and troubleshooting.
+## Flujo de Trabajo Recomendado
+
+1. **Antes de codificar**: Consulta la skill relevante
+2. **Durante**: Aplica los patrones de la skill
+3. **Después**: Usa `refactor` skill si es necesario
+4. **Commit**: Usa `git-commit` skill
+
+## Notas Importantes
+
+- El frontend usa Islands Architecture (Astro) - no todo necesita JavaScript
+- React se hidrata solo donde es necesario (directivas `client:*`)
+- El backend maneja autenticación JWT - siempre verificar tokens
+- Los modelos usan soft delete (columna `eliminado`)

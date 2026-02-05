@@ -215,6 +215,7 @@ export interface Producto {
   categoria: string;
   imagen_principal: string | null;
   stock?: number;
+  imagenes?: ImagenProducto[];  // Array of product images from backend
 }
 
 export interface ProductoInput {
@@ -420,22 +421,18 @@ export interface Orden {
 export interface OrdenDetalle {
   id: number;
   id_producto: number;
-  producto: {
-    id: number;
-    nombre: string;
-    sku: string;
-    precio: number;
-  };
+  producto: Producto;  // Use full Producto type (backend returns producto.to_dict())
   cantidad: number;
   precio_unitario: number;
 }
 
 export interface OrdenInput {
   id_cliente: number;
-  id_usuarios: number;
-  productos: Array<{
+  id_vendedor: number;  // Backend endpoint expects "id_vendedor" (mapped to id_usuarios in DB)
+  items: Array<{  // Backend endpoint expects "items" array
     id_producto: number;
     cantidad: number;
+    precio_unitario?: number;  // Optional: uses product price if not provided
   }>;
 }
 

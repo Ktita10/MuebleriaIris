@@ -10,23 +10,57 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
 }
 
-const variantStyles = {
-  primary:
-    "bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 shadow-sm hover:shadow-md",
-  secondary:
-    "bg-gray-600 text-white hover:bg-gray-700 focus:ring-gray-500 shadow-sm hover:shadow-md",
-  outline:
-    "border-2 border-gray-300 text-gray-700 hover:border-blue-600 hover:text-blue-600 bg-white hover:bg-gray-50 focus:ring-blue-500",
-  ghost: "text-gray-600 hover:bg-gray-100 hover:text-gray-900 focus:ring-gray-500",
-  danger: "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 shadow-sm hover:shadow-md",
-  success: "bg-green-600 text-white hover:bg-green-700 focus:ring-green-500 shadow-sm hover:shadow-md",
-};
+/**
+ * Button Component
+ * 
+ * Componente de botón reutilizable siguiendo patrones de tailwind-patterns skill.
+ * Soporta variantes, tamaños, estados de carga y iconos.
+ * 
+ * @example
+ * <Button variant="primary" size="md">Click me</Button>
+ * <Button variant="outline" isLoading>Saving...</Button>
+ */
 
-const sizeStyles = {
+// Configuración de variantes usando objetos (evita if/else chains - react-best-practices)
+const variants = {
+  primary: "bg-orange-500 text-white hover:bg-orange-600 active:bg-orange-700",
+  secondary: "bg-gray-900 text-white hover:bg-gray-800 active:bg-gray-700",
+  outline: "bg-white border-2 border-gray-300 text-gray-700 hover:bg-gray-50 active:bg-gray-100",
+  ghost: "bg-transparent text-gray-600 hover:bg-gray-100 active:bg-gray-200",
+  danger: "bg-red-600 text-white hover:bg-red-700 active:bg-red-800",
+  success: "bg-green-600 text-white hover:bg-green-700 active:bg-green-800",
+} as const;
+
+const sizes = {
   sm: "px-3 py-1.5 text-sm",
-  md: "px-4 py-2 text-sm font-medium",
-  lg: "px-6 py-3 text-base font-medium",
-};
+  md: "px-4 py-2 text-sm",
+  lg: "px-6 py-3 text-base",
+} as const;
+
+// Spinner component extraído (rendering-hoist-jsx)
+const LoadingSpinner = () => (
+  <svg
+    className="animate-spin h-4 w-4"
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    aria-hidden="true"
+  >
+    <circle
+      className="opacity-25"
+      cx="12"
+      cy="12"
+      r="10"
+      stroke="currentColor"
+      strokeWidth="4"
+    />
+    <path
+      className="opacity-75"
+      fill="currentColor"
+      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+    />
+  </svg>
+);
 
 export default function Button({
   variant = "primary",
@@ -38,50 +72,53 @@ export default function Button({
   children,
   className = "",
   disabled,
+  type = "button",
   ...props
 }: ButtonProps) {
+  const isDisabled = disabled || isLoading;
+  
+  // Clases construidas usando template literal (más legible)
+  const buttonClasses = [
+    // Base
+    "inline-flex items-center justify-center gap-2 rounded-lg font-medium",
+    // Transiciones
+    "transition-colors duration-200",
+    // Focus para accesibilidad
+    "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500",
+    // Variante
+    variants[variant],
+    // Tamaño
+    sizes[size],
+    // Ancho completo
+    fullWidth && "w-full",
+    // Estados
+    isLoading && "cursor-wait opacity-90",
+    isDisabled && !isLoading && "cursor-not-allowed opacity-50",
+    !isDisabled && "cursor-pointer",
+    // Clases custom
+    className,
+  ].filter(Boolean).join(" ");
+
   return (
     <button
-      className={`
-        inline-flex items-center justify-center gap-2
-        rounded-lg
-        transition-all duration-200
-        focus:outline-none focus:ring-2 focus:ring-offset-2
-        ${isLoading ? 'cursor-wait opacity-90' : 'disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none'}
-        ${variantStyles[variant]}
-        ${sizeStyles[size]}
-        ${fullWidth ? "w-full" : ""}
-        ${className}
-      `}
-      disabled={disabled || isLoading}
+      type={type}
+      className={buttonClasses}
+      disabled={isDisabled}
+      aria-busy={isLoading}
       {...props}
     >
       {isLoading ? (
-        <svg
-          className="animate-spin h-4 w-4"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <circle
-            className="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            strokeWidth="4"
-          />
-          <path
-            className="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-          />
-        </svg>
+        <>
+          <LoadingSpinner />
+          <span>Procesando...</span>
+        </>
       ) : (
-        leftIcon
+        <>
+          {leftIcon}
+          <span>{children}</span>
+          {rightIcon}
+        </>
       )}
-      {isLoading ? "Procesando..." : children}
-      {!isLoading && rightIcon}
     </button>
   );
 }
@@ -100,20 +137,20 @@ export function ButtonGroup({
   align = "right",
   className = "",
 }: ButtonGroupProps) {
-  const alignStyles = {
-    left: "justify-start",
-    center: "justify-center",
-    right: "justify-end",
-    between: "justify-between",
-  };
+  let alignClass = "";
+  if (align === "left") {
+    alignClass = "justify-start";
+  } else if (align === "center") {
+    alignClass = "justify-center";
+  } else if (align === "right") {
+    alignClass = "justify-end";
+  } else if (align === "between") {
+    alignClass = "justify-between";
+  }
 
   return (
     <div
-      className={`
-        flex items-center gap-3 pt-4 border-t border-gray-200 mt-6
-        ${alignStyles[align]}
-        ${className}
-      `}
+      className={`flex items-center gap-3 pt-4 border-t border-gray-200 mt-6 ${alignClass} ${className}`}
     >
       {children}
     </div>

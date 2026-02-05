@@ -10,7 +10,7 @@
 import { useState, useEffect } from "react";
 import { productosApi, type Producto } from "../../lib/api";
 import ProductCard from "../ui/ProductCard";
-import Spinner from "../ui/Spinner";
+import { LoadingSpinner } from "../ui/LoadingSpinner";
 
 interface CatalogGridProps {
   categoria?: string | null;
@@ -63,9 +63,12 @@ export default function CatalogGrid({ categoria, buscar, orden = "nombre", pagin
       const allProducts = await productosApi.getAll();
       let filtered = [...allProducts];
 
-      // Filter by category
-      if (categoria && categoryMap[categoria]) {
-        filtered = filtered.filter((p) => p.categoria === categoryMap[categoria]);
+      // Filter by category (case-insensitive comparison)
+      if (categoria && categoryMap[categoria.toLowerCase()]) {
+        const categoryName = categoryMap[categoria.toLowerCase()];
+        filtered = filtered.filter(
+          (p) => p.categoria.toLowerCase() === categoryName.toLowerCase()
+        );
       }
 
       setProducts(filtered);
@@ -111,19 +114,13 @@ export default function CatalogGrid({ categoria, buscar, orden = "nombre", pagin
   }, [products, currentBuscar, currentOrden]);
 
   const handleAddToCart = (id: number) => {
-    // In production, this would add to cart context
-    console.log("Adding to cart:", id);
-    // Show toast notification
+    // Dispatch custom event to trigger cart addition
     const event = new CustomEvent("cart:add", { detail: { productId: id } });
     window.dispatchEvent(event);
   };
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Spinner size="lg" />
-      </div>
-    );
+    return <LoadingSpinner size="lg" centered={false} />;
   }
 
   if (error) {

@@ -19,8 +19,11 @@
 #       return error_response(e.message, status_code=e.status_code)
 
 from .producto_service import ProductoService, ProductoServiceError
+from .categoria_service import CategoriaService, CategoriaServiceError
 
 __all__ = [
     'ProductoService',
     'ProductoServiceError',
+    'CategoriaService',
+    'CategoriaServiceError',
 ]

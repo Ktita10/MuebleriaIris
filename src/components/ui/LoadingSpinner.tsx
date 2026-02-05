@@ -1,23 +1,39 @@
 /**
- * Loading Spinner Component
+ * Unified Loading Spinner Component
+ * Supports both predefined colors and custom Tailwind classes
  */
 
 interface LoadingSpinnerProps {
   size?: 'sm' | 'md' | 'lg';
   message?: string;
+  color?: 'primary' | 'white' | 'gray' | string;  // Predefined or custom Tailwind class
+  centered?: boolean;  // Whether to add padding/centering
 }
 
-export function LoadingSpinner({ size = 'md', message }: LoadingSpinnerProps) {
+export function LoadingSpinner({ 
+  size = 'md', 
+  message,
+  color = 'primary',
+  centered = true
+}: LoadingSpinnerProps) {
   const sizeClasses = {
     sm: 'w-4 h-4',
     md: 'w-8 h-8',
     lg: 'w-12 h-12',
   };
 
-  return (
-    <div className="flex flex-col items-center justify-center p-8">
+  // Map predefined colors to Tailwind classes, or use custom class
+  const colorMap: Record<string, string> = {
+    primary: 'text-primary-600',
+    white: 'text-white',
+    gray: 'text-gray-400',
+  };
+  const colorClass = colorMap[color] || color;
+
+  const spinnerContent = (
+    <>
       <div className={`${sizeClasses[size]} animate-spin`}>
-        <svg className="w-full h-full text-blue-600" fill="none" viewBox="0 0 24 24">
+        <svg className={`w-full h-full ${colorClass}`} fill="none" viewBox="0 0 24 24">
           <circle
             className="opacity-25"
             cx="12"
@@ -36,6 +52,23 @@ export function LoadingSpinner({ size = 'md', message }: LoadingSpinnerProps) {
       {message && (
         <p className="mt-4 text-sm text-gray-600">{message}</p>
       )}
+    </>
+  );
+
+  if (centered) {
+    return (
+      <div className="flex flex-col items-center justify-center p-8">
+        {spinnerContent}
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center justify-center">
+      {spinnerContent}
     </div>
   );
 }
+
+// Default export for backward compatibility
+export default LoadingSpinner;

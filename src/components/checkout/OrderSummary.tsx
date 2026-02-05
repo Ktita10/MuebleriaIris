@@ -1,13 +1,6 @@
 import { useStore } from "@nanostores/react";
 import { $cartItems, $cartTotal } from "../../stores/cart";
-
-function formatPrice(price: number): string {
-  return new Intl.NumberFormat("es-AR", {
-    style: "currency",
-    currency: "ARS",
-    minimumFractionDigits: 0,
-  }).format(price);
-}
+import { formatPrice } from "../../lib/formatters";
 
 interface OrderSummaryProps {
   shippingCost?: number;
@@ -37,7 +30,7 @@ export default function OrderSummary({ shippingCost = 0 }: OrderSummaryProps) {
         <p className="text-gray-500">Tu carrito esta vacio</p>
         <a
           href="/catalogo"
-          className="inline-block mt-4 text-primary-600 hover:text-primary-700 font-medium"
+          className="inline-block mt-4 text-primary-600 font-medium"
         >
           Ir al catalogo
         </a>
@@ -57,7 +50,7 @@ export default function OrderSummary({ shippingCost = 0 }: OrderSummaryProps) {
             className="flex gap-4"
           >
             {/* Image */}
-            <div className="w-16 h-16 bg-gray-200 rounded-lg flex-shrink-0 flex items-center justify-center">
+            <div className="w-16 h-16 bg-gray-200 rounded-lg shrink-0 flex items-center justify-center">
               {item.imagen ? (
                 <img
                   src={item.imagen}

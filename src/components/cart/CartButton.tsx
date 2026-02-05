@@ -28,7 +28,7 @@ export default function CartButton() {
   return (
     <button
       onClick={openCart}
-      className="relative p-2 text-gray-600 hover:text-primary-600 hover:bg-gray-100 rounded-lg transition-colors"
+      className="relative p-2 text-gray-600 rounded-lg"
       aria-label="Ver carrito"
     >
       <svg

@@ -40,7 +40,7 @@ export function FavoritosList({ idCliente }: FavoritosListProps) {
   if (loading) {
     return (
       <div className="flex justify-center items-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
         <span className="ml-2">Cargando favoritos...</span>
       </div>
     );
@@ -58,7 +58,7 @@ export function FavoritosList({ idCliente }: FavoritosListProps) {
     return (
       <div className="text-center py-8 text-gray-500">
         <p>No tienes productos favoritos.</p>
-        <a href="/catalogo" className="text-amber-600 hover:underline mt-2 inline-block">
+        <a href="/catalogo" className="text-orange-500 mt-2 inline-block">
           Explorar catálogo
         </a>
       </div>
@@ -70,7 +70,7 @@ export function FavoritosList({ idCliente }: FavoritosListProps) {
       {favoritos.map(favorito => (
         <div 
           key={favorito.id} 
-          className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+          className="bg-white rounded-lg overflow-hidden border border-gray-200"
         >
           <div className="relative">
             <img 
@@ -80,7 +80,7 @@ export function FavoritosList({ idCliente }: FavoritosListProps) {
             />
             <button
               onClick={() => handleRemove(favorito.id_producto)}
-              className="absolute top-2 right-2 bg-white rounded-full p-2 shadow hover:bg-red-50 transition-colors"
+              className="absolute top-2 right-2 bg-white rounded-full p-2 shadow"
               title="Eliminar de favoritos"
             >
               <svg className="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
@@ -92,12 +92,12 @@ export function FavoritosList({ idCliente }: FavoritosListProps) {
             <h3 className="text-lg font-semibold text-gray-800 truncate">
               {favorito.producto?.nombre}
             </h3>
-            <p className="text-amber-600 font-bold text-xl mt-1">
+            <p className="text-orange-500 font-bold text-xl mt-1">
               ${favorito.producto?.precio?.toLocaleString('es-AR')}
             </p>
             <a 
               href={`/producto/${favorito.id_producto}`}
-              className="mt-3 block text-center bg-amber-600 text-white py-2 rounded hover:bg-amber-700 transition-colors"
+              className="mt-3 block text-center bg-orange-500 text-white py-2 rounded-lg"
             >
               Ver producto
             </a>

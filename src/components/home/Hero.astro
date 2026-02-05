@@ -1,54 +1,58 @@
 ---
-// Hero section for homepage with background image overlay
+/**
+ * Hero Section - Iris Muebles
+ * 
+ * Diseño moderno con imagen de fondo, overlay elegante y CTAs prominentes
+ * Inspirado en diseños de Dribbble/Awwwards para ecommerce de muebles
+ */
 ---
 
-<section class="relative min-h-screen flex items-center justify-center overflow-hidden">
+<section class="relative min-h-[90vh] flex items-center overflow-hidden">
   <!-- Background Image -->
   <div class="absolute inset-0 z-0">
     <img 
-      src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=1920&q=80&auto=format&fit=crop"
-      alt="Modern living room with elegant furniture"
+      src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=1920&q=80&auto=format&fit=crop"
+      alt="Living moderno con muebles elegantes"
       class="w-full h-full object-cover"
       loading="eager"
     />
-    <!-- Dark Overlay for Text Readability -->
-    <div class="absolute inset-0 bg-gradient-to-br from-black/60 via-black/50 to-black/60"></div>
+    <!-- Gradient Overlay - Elegante de izquierda a derecha -->
+    <div class="absolute inset-0 bg-linear-to-r from-black/80 via-black/50 to-transparent"></div>
   </div>
 
-  <!-- Content Overlay -->
-  <div class="container relative z-10 py-20 px-4">
-    <div class="max-w-4xl mx-auto text-center text-white">
+  <!-- Content -->
+  <div class="container relative z-10 py-20 lg:py-32">
+    <div class="max-w-2xl">
       <!-- Badge -->
-      <span
-        class="inline-block px-4 py-2 bg-white/10 backdrop-blur-md text-white border border-white/20 rounded-full text-sm font-medium mb-6"
-      >
-        Nuevos modelos 2025
-      </span>
+      <div class="mb-8">
+        <span
+          class="inline-flex items-center gap-2 px-4 py-2 bg-orange-500/20 backdrop-blur-sm text-orange-300 border border-orange-500/30 rounded-full text-sm font-medium"
+        >
+          <span class="w-2 h-2 bg-orange-400 rounded-full animate-pulse"></span>
+          Nuevo catalogo 2025
+        </span>
+      </div>
 
       <!-- Title -->
-      <h1
-        class="text-4xl sm:text-5xl lg:text-7xl font-bold leading-tight mb-6"
-      >
-        Muebles que
-        <span class="text-primary-400">transforman</span>
-        tu hogar
+      <h1 class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-[1.1] mb-6">
+        Transforma tu hogar
+        <span class="block text-orange-400 mt-2">con estilo</span>
       </h1>
 
       <!-- Description -->
-      <p class="text-lg sm:text-xl text-gray-200 mb-10 max-w-2xl mx-auto">
-        Descubre nuestra coleccion de muebles de alta calidad, disenados para
-        combinar estilo, confort y durabilidad. Envios a todo el pais.
+      <p class="text-lg sm:text-xl text-gray-300 mb-10 max-w-xl leading-relaxed">
+        Muebles y decoracion de calidad para crear espacios unicos que reflejen tu personalidad. Envios a todo el pais.
       </p>
 
       <!-- CTAs -->
-      <div class="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+      <div class="flex flex-col sm:flex-row gap-4 mb-12">
         <a
           href="/catalogo"
-          class="inline-flex items-center justify-center px-8 py-4 bg-primary-600 text-white font-semibold rounded-xl hover:bg-primary-700 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+          class="inline-flex items-center justify-center gap-3 px-8 py-4 bg-orange-500 text-white font-semibold rounded-xl"
         >
           Ver Catalogo
           <svg
-            class="w-5 h-5 ml-2"
+            class="w-5 h-5"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -63,56 +67,73 @@
 
         <a
           href="/contacto"
-          class="inline-flex items-center justify-center px-8 py-4 bg-white/10 backdrop-blur-md text-white font-semibold rounded-xl hover:bg-white/20 transition-all border border-white/30 hover:border-white/50"
+          class="inline-flex items-center justify-center px-8 py-4 bg-white/10 backdrop-blur-sm text-white font-semibold rounded-xl border border-white/20"
         >
           Contactanos
         </a>
       </div>
 
       <!-- Trust Badges -->
-      <div
-        class="flex flex-wrap gap-6 justify-center text-sm text-white/90"
-      >
+      <div class="flex flex-wrap gap-x-8 gap-y-4 text-sm text-gray-300">
         <div class="flex items-center gap-2">
-          <svg
-            class="w-5 h-5 text-green-400"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-              clip-rule="evenodd"></path>
-          </svg>
+          <div class="w-8 h-8 bg-orange-500/20 rounded-lg flex items-center justify-center">
+            <svg
+              class="w-4 h-4 text-orange-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"></path>
+            </svg>
+          </div>
           <span>Envio gratis +$50.000</span>
         </div>
         <div class="flex items-center gap-2">
-          <svg
-            class="w-5 h-5 text-green-400"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-              clip-rule="evenodd"></path>
-          </svg>
+          <div class="w-8 h-8 bg-orange-500/20 rounded-lg flex items-center justify-center">
+            <svg
+              class="w-4 h-4 text-orange-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+            </svg>
+          </div>
           <span>Garantia 2 anios</span>
         </div>
         <div class="flex items-center gap-2">
-          <svg
-            class="w-5 h-5 text-green-400"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-              clip-rule="evenodd"></path>
-          </svg>
+          <div class="w-8 h-8 bg-orange-500/20 rounded-lg flex items-center justify-center">
+            <svg
+              class="w-4 h-4 text-orange-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+            </svg>
+          </div>
           <span>12 cuotas sin interes</span>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Scroll Indicator -->
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 hidden lg:block">
+    <div class="w-6 h-10 border-2 border-white/30 rounded-full flex items-start justify-center p-2">
+      <div class="w-1 h-2 bg-orange-400 rounded-full animate-bounce"></div>
     </div>
   </div>
 </section>

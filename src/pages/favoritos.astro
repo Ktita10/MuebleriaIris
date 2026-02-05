@@ -1,13 +1,35 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { FavoritosList } from '../components/favoritos/FavoritosList';
+import FavoritosContainer from '../components/favoritos/FavoritosContainer';
 
-const title = 'Favoritos';
+const title = 'Mis Favoritos - Iris Muebles';
 ---
 
 <Layout title={title}>
-  <main class="max-w-4xl mx-auto py-8 px-4">
-    <h1 class="text-2xl font-bold mb-6">{title}</h1>
-    <FavoritosList client:load />
-  </main>
+  <section class="section bg-gray-50">
+    <div class="container max-w-6xl">
+      <!-- Page Header -->
+      <div class="mb-8">
+        <nav class="text-sm text-gray-500 mb-4">
+          <a href="/">Inicio</a>
+          <span class="mx-2">/</span>
+          <span class="text-gray-900">Favoritos</span>
+        </nav>
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+            <svg class="w-6 h-6 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-3xl lg:text-4xl font-bold text-gray-900">Mis Favoritos</h1>
+            <p class="text-gray-600 mt-1">Productos que guardaste para ver más tarde</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Favoritos Container -->
+      <FavoritosContainer client:load />
+    </div>
+  </section>
 </Layout>

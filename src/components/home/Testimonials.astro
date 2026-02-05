@@ -1,41 +1,50 @@
 ---
 const testimonials = [
   {
-    name: "Maria Garcia",
-    role: "Disenadora de Interiores",
+    name: "María García",
+    role: "Diseñadora de Interiores",
     content:
-      "Los muebles de Muebleria Iris transformaron completamente el departamento de mi cliente. La calidad es excepcional y el servicio al cliente es impecable.",
+      "Los muebles de Iris Muebles transformaron completamente el departamento de mi cliente. La calidad es excepcional y el servicio al cliente es impecable.",
     rating: 5,
-    avatar: null,
   },
   {
-    name: "Carlos Rodriguez",
+    name: "Carlos Rodríguez",
     role: "Propietario de Casa",
     content:
-      "Compre un juego de comedor completo y estoy encantado. La entrega fue puntual y la instalacion profesional. Definitivamente volvere a comprar.",
+      "Compré un juego de comedor completo y estoy encantado. La entrega fue puntual y la instalación profesional. Definitivamente volveré a comprar.",
     rating: 5,
-    avatar: null,
   },
   {
-    name: "Ana Martinez",
+    name: "Ana Martínez",
     role: "Arquitecta",
     content:
-      "Trabajo con Muebleria Iris hace 3 anios para mis proyectos. Siempre entregan a tiempo y la relacion calidad-precio es inmejorable.",
+      "Trabajo con Iris Muebles hace 3 años para mis proyectos. Siempre entregan a tiempo y la relación calidad-precio es inmejorable.",
     rating: 5,
-    avatar: null,
   },
+];
+
+const stats = [
+  { value: "1,500+", label: "Clientes felices" },
+  { value: "10+", label: "Años de experiencia" },
+  { value: "500+", label: "Productos disponibles" },
+  { value: "4.9", label: "Calificación promedio" },
 ];
 ---
 
-<section class="section bg-gray-50">
+<section class="section bg-warm-100">
   <div class="container">
     <!-- Section Header -->
-    <div class="text-center max-w-2xl mx-auto mb-12">
+    <div class="text-center max-w-2xl mx-auto mb-16">
+      <span
+        class="inline-block bg-orange-100 text-orange-600 text-sm font-medium px-4 py-1.5 rounded-full mb-4"
+      >
+        Testimonios
+      </span>
       <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
         Lo que dicen nuestros clientes
       </h2>
       <p class="text-gray-600 text-lg">
-        Miles de hogares ya confiaron en nosotros. Conoce sus experiencias.
+        Miles de hogares ya confiaron en nosotros. Conocé sus experiencias.
       </p>
     </div>
 
@@ -45,10 +54,10 @@ const testimonials = [
         testimonials.map((testimonial) => (
           <article class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
             {/* Rating Stars */}
-            <div class="flex gap-1 mb-4">
+            <div class="flex gap-1 mb-6">
               {Array.from({ length: testimonial.rating }).map(() => (
                 <svg
-                  class="w-5 h-5 text-yellow-400"
+                  class="w-5 h-5 text-orange-400"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
@@ -57,15 +66,26 @@ const testimonials = [
               ))}
             </div>
 
+            {/* Quote Icon */}
+            <div class="mb-4">
+              <svg
+                class="w-8 h-8 text-orange-200"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+              </svg>
+            </div>
+
             {/* Quote */}
-            <blockquote class="text-gray-700 leading-relaxed mb-6">
+            <blockquote class="text-gray-700 leading-relaxed mb-6 text-lg">
               "{testimonial.content}"
             </blockquote>
 
             {/* Author */}
-            <div class="flex items-center gap-4">
-              <div class="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
-                <span class="text-primary-600 font-semibold text-lg">
+            <div class="flex items-center gap-4 pt-4 border-t border-gray-100">
+              <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                <span class="text-orange-600 font-semibold text-lg">
                   {testimonial.name.charAt(0)}
                 </span>
               </div>
@@ -81,24 +101,16 @@ const testimonials = [
 
     <!-- Stats -->
     <div
-      class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 p-8 bg-white rounded-2xl shadow-sm border border-gray-100"
+      class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 p-8 bg-white rounded-2xl shadow-lg border border-gray-100"
     >
-      <div class="text-center">
-        <p class="text-4xl font-bold text-primary-600">1,500+</p>
-        <p class="text-gray-600 mt-1">Clientes felices</p>
-      </div>
-      <div class="text-center">
-        <p class="text-4xl font-bold text-primary-600">10+</p>
-        <p class="text-gray-600 mt-1">Anios de experiencia</p>
-      </div>
-      <div class="text-center">
-        <p class="text-4xl font-bold text-primary-600">500+</p>
-        <p class="text-gray-600 mt-1">Productos disponibles</p>
-      </div>
-      <div class="text-center">
-        <p class="text-4xl font-bold text-primary-600">4.9</p>
-        <p class="text-gray-600 mt-1">Calificacion promedio</p>
-      </div>
+      {
+        stats.map((stat) => (
+          <div class="text-center">
+            <p class="text-4xl font-bold text-orange-500">{stat.value}</p>
+            <p class="text-gray-600 mt-1">{stat.label}</p>
+          </div>
+        ))
+      }
     </div>
   </div>
 </section>

@@ -4,7 +4,7 @@
  *
  * - Este archivo define la página inicial (landing page) de la tienda.
  * - Utiliza el layout principal para envolver todos los componentes.
- * - Incluye los componentes de hero, características, productos destacados, categorías, testimonios y newsletter.
+ * - Incluye los componentes de hero, características, productos destacados, categorías, testimonios y sobre nosotros.
  *
  * El objetivo es presentar la propuesta de valor de la tienda y dirigir al usuario hacia el catálogo o la conversión.
  */
@@ -14,7 +14,8 @@ import Features from '../components/home/Features.astro';
 import FeaturedProducts from '../components/home/FeaturedProducts.astro';
 import Categories from '../components/home/Categories.astro';
 import Testimonials from '../components/home/Testimonials.astro';
-import Newsletter from '../components/home/Newsletter.astro';
+import AboutUs from '../components/home/AboutUs.astro';
+import PaymentMethods from '../components/home/PaymentMethods.astro';
 ---
 
 <Layout>
@@ -22,8 +23,9 @@ import Newsletter from '../components/home/Newsletter.astro';
   <Features />
   <FeaturedProducts />
   <Categories />
+  <PaymentMethods />
   <Testimonials />
-  <Newsletter />
+  <AboutUs />
 </Layout>
 
 <!--

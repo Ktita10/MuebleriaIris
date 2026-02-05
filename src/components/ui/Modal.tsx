@@ -67,7 +67,7 @@ export default function Modal({
       >
         {/* Header - sticky at top */}
         {title && (
-          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 flex-shrink-0">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 shrink-0">
             <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
             <button
               onClick={onClose}

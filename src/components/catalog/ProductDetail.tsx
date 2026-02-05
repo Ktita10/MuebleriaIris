@@ -9,29 +9,11 @@
  */
 import { useState } from "react";
 import Button from "../ui/Button";
+import { formatPrice } from "../../lib/formatters";
+import type { ProductoDetalle } from "../../types/product";
 
 interface ProductDetailProps {
-  product: {
-    id: number;
-    nombre: string;
-    precio: number;
-    descripcion: string;
-    categoria: string;
-    material: string;
-    dimensiones: { alto: number; ancho: number; profundidad: number };
-    colores: string[];
-    imagenes: (string | null)[];
-    stock: number;
-    sku: string;
-  };
-}
-
-function formatPrice(price: number): string {
-  return new Intl.NumberFormat("es-AR", {
-    style: "currency",
-    currency: "ARS",
-    minimumFractionDigits: 0,
-  }).format(price);
+  product: ProductoDetalle;
 }
 
 export default function ProductDetail({ product }: ProductDetailProps) {
@@ -66,7 +48,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
       {/* Image Gallery */}
       <div>
         {/* Main Image */}
-        <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center mb-4">
+        <div className="aspect-square bg-linear-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center mb-4">
           {product.imagenes[selectedImage] ? (
             <img
               src={product.imagenes[selectedImage]!}
@@ -97,17 +79,17 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               <button
                 key={idx}
                 onClick={() => setSelectedImage(idx)}
-                className={`aspect-square rounded-xl overflow-hidden border-2 transition-colors ${
+                className={`aspect-square rounded-xl overflow-hidden border-2 ${
                   selectedImage === idx
                     ? "border-primary-600"
-                    : "border-transparent hover:border-gray-300"
+                    : "border-transparent"
                 }`}
               >
-                <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                <div className="w-full h-full bg-linear-to-br from-gray-100 to-gray-200 flex items-center justify-center">
                   {img ? (
                     <img
                       src={img}
-                      alt=""
+                      alt={`${product.nombre} - Imagen ${idx + 1}`}
                       className="w-full h-full object-cover"
                     />
                   ) : (
@@ -165,10 +147,10 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               <button
                 key={color}
                 onClick={() => setSelectedColor(color)}
-                className={`px-4 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${
+                className={`px-4 py-2 rounded-lg border-2 text-sm font-medium ${
                   selectedColor === color
                     ? "border-primary-600 bg-primary-50 text-primary-700"
-                    : "border-gray-200 text-gray-700 hover:border-gray-300"
+                    : "border-gray-200 text-gray-700"
                 }`}
               >
                 {color}
@@ -186,7 +168,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
             <div className="flex items-center border border-gray-200 rounded-xl">
               <button
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="w-12 h-12 flex items-center justify-center text-gray-600 hover:bg-gray-100 rounded-l-xl"
+                className="w-12 h-12 flex items-center justify-center text-gray-600 rounded-l-xl"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
@@ -195,7 +177,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               <span className="w-12 text-center font-semibold">{quantity}</span>
               <button
                 onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
-                className="w-12 h-12 flex items-center justify-center text-gray-600 hover:bg-gray-100 rounded-r-xl"
+                className="w-12 h-12 flex items-center justify-center text-gray-600 rounded-r-xl"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -229,7 +211,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
             Agregar al carrito
           </Button>
           <button
-            className="p-4 border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-red-500 transition-colors"
+            className="p-4 border border-gray-200 rounded-xl text-gray-600"
             aria-label="Agregar a favoritos"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

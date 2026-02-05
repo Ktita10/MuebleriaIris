@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { dashboardApi } from '../../lib/api';
+import { formatPrice as formatCurrency } from '../../lib/formatters';
 
 interface DashboardData {
   periodo: string;
@@ -62,14 +63,6 @@ export function DashboardMetrics({ periodo = 'mes' }: DashboardMetricsProps) {
     } finally {
       setLoading(false);
     }
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('es-AR', {
-      style: 'currency',
-      currency: 'ARS',
-      minimumFractionDigits: 0,
-    }).format(amount);
   };
 
   const statusColors: { [key: string]: string } = {

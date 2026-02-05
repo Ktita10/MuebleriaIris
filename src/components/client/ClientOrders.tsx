@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useStore } from "@nanostores/react";
 import { $user, $isAuthenticated } from "../../stores/auth";
-import { ordenesApi, type Orden } from "../../lib/api";
+import { ordenesApi, type Orden, type OrdenDetalle } from "../../lib/api";
+import { formatPrice, formatDate } from "../../lib/formatters";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
 import { ErrorAlert, SuccessAlert } from "../ui/Alerts";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
@@ -59,7 +60,6 @@ export default function ClientOrders() {
       const data = await ordenesApi.getAll({ cliente_id: user.cliente_id });
       setOrders(data);
     } catch (err) {
-      console.error(err);
       setError("No se pudieron cargar tus pedidos. Intenta nuevamente.");
     } finally {
       setLoading(false);
@@ -85,19 +85,11 @@ export default function ClientOrders() {
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("es-AR", {
-      style: "currency",
-      currency: "ARS",
-      minimumFractionDigits: 0,
-    }).format(amount);
+    return formatPrice(amount);
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("es-AR", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
+  const formatOrderDate = (dateString: string) => {
+    return formatDate(dateString);
   };
 
   if (!isAuthenticated) {
@@ -179,7 +171,7 @@ export default function ClientOrders() {
                     </div>
                     <div>
                       <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Fecha</p>
-                      <p className="text-sm font-medium text-gray-900">{formatDate(order.fecha_creacion)}</p>
+                      <p className="text-sm font-medium text-gray-900">{formatOrderDate(order.fecha_creacion)}</p>
                     </div>
                     <div>
                       <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Total</p>
@@ -260,32 +252,38 @@ export default function ClientOrders() {
   );
 }
 
+// Type for order with loaded details
+interface OrderWithDetails extends Orden {
+  detalles: OrdenDetalle[];
+}
+
 // Helper component to fetch and display details
 function OrderDetailsFetcher({ orderId }: { orderId: number }) {
-    const [details, setDetails] = useState<any>(null); // Using any for simplicity here, ideally typed
+    const [details, setDetails] = useState<OrderWithDetails | null>(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
 
     useEffect(() => {
         ordenesApi.getById(orderId)
             .then(data => {
-                setDetails(data);
+                setDetails(data as OrderWithDetails);
                 setLoading(false);
             })
-            .catch(err => {
-                console.error(err);
+            .catch(() => {
+                setError(true);
                 setLoading(false);
             });
     }, [orderId]);
 
     if (loading) return <LoadingSpinner message="Cargando detalles..." />;
-    if (!details) return <p className="text-red-500">Error al cargar detalles.</p>;
+    if (error || !details) return <p className="text-red-500">Error al cargar detalles.</p>;
 
     return (
         <div className="space-y-6">
             <div className="space-y-4">
-                {details.detalles?.map((item: any, idx: number) => (
+                {details.detalles?.map((item: OrdenDetalle, idx: number) => (
                     <div key={idx} className="flex gap-4 p-4 border border-gray-100 rounded-lg">
-                        <div className="w-20 h-20 bg-gray-100 rounded-lg flex-shrink-0 overflow-hidden">
+                        <div className="w-20 h-20 bg-gray-100 rounded-lg shrink-0 overflow-hidden">
                              {/* Placeholder or real image if available in expanded details */}
                              <svg className="w-full h-full text-gray-300 p-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -295,12 +293,12 @@ function OrderDetailsFetcher({ orderId }: { orderId: number }) {
                             <h4 className="font-medium text-gray-900">{item.producto?.nombre || "Producto"}</h4>
                             <p className="text-sm text-gray-500">Cantidad: {item.cantidad}</p>
                             <p className="text-sm font-semibold text-gray-900">
-                                {new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS" }).format(item.precio_unitario)} c/u
+                                {formatPrice(item.precio_unitario)} c/u
                             </p>
                         </div>
                         <div className="text-right">
                              <p className="font-bold text-gray-900">
-                                {new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS" }).format(item.subtotal || item.cantidad * item.precio_unitario)}
+                                {formatPrice(item.cantidad * item.precio_unitario)}
                              </p>
                         </div>
                     </div>
@@ -310,7 +308,7 @@ function OrderDetailsFetcher({ orderId }: { orderId: number }) {
             <div className="border-t pt-4 flex justify-between items-center">
                 <span className="font-semibold text-gray-700">Total Pagado</span>
                 <span className="text-2xl font-bold text-primary-600">
-                     {new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS" }).format(details.total)}
+                     {formatPrice(details.total)}
                 </span>
             </div>
         </div>

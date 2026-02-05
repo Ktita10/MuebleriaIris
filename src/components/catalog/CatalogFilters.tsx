@@ -34,7 +34,7 @@ export default function CatalogFilters({
     if (onFilterChange) {
       onFilterChange(buscar, orden);
     }
-  }, [buscar, orden]);
+  }, [buscar, orden, onFilterChange]);
 
   const handleOrdenChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newOrden = e.target.value;

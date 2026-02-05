@@ -1,4 +1,3 @@
-import CartButton from "./CartButton";
 import CartDrawer from "./CartDrawer";
 
 export default function CartProvider() {
@@ -8,5 +7,3 @@ export default function CartProvider() {
     </>
   );
 }
-
-export { CartButton, CartDrawer };

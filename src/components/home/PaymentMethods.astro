@@ -1,0 +1,172 @@
+---
+/**
+ * PaymentMethods Component
+ *
+ * Displays available payment methods including cash, bank transfer, and credit/debit cards.
+ * Shows card logos and financing options (cuotas).
+ */
+
+const paymentOptions = [
+  {
+    title: "Efectivo",
+    description: "Pago en efectivo al momento de la entrega",
+    icon: "cash",
+  },
+  {
+    title: "Transferencia",
+    description: "Transferencia bancaria con 5% de descuento",
+    icon: "bank",
+  },
+  {
+    title: "Tarjetas",
+    description: "Débito y crédito hasta 12 cuotas",
+    icon: "card",
+  },
+];
+
+const cardLogos = [
+  { name: "Visa", logo: "/images/cards/visa.svg" },
+  { name: "Mastercard", logo: "/images/cards/mastercard.svg" },
+  { name: "Naranja X", logo: "/images/cards/naranja.svg" },
+  { name: "Tarjeta Fiel", logo: "/images/cards/fiel.svg" },
+  { name: "American Express", logo: "/images/cards/amex.svg" },
+  { name: "Cabal", logo: "/images/cards/cabal.svg" },
+];
+---
+
+<section class="section bg-white">
+  <div class="container">
+    <!-- Section Header -->
+    <div class="text-center max-w-2xl mx-auto mb-12">
+      <span
+        class="inline-block bg-orange-100 text-orange-600 text-sm font-medium px-4 py-1.5 rounded-full mb-4"
+      >
+        Formas de Pago
+      </span>
+      <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+        Múltiples opciones de pago
+      </h2>
+      <p class="text-gray-600 text-lg">
+        Elegí la forma de pago que más te convenga. Aceptamos efectivo,
+        transferencias y todas las tarjetas.
+      </p>
+    </div>
+
+    <!-- Payment Options Grid -->
+    <div class="grid md:grid-cols-3 gap-6 mb-12">
+      {
+        paymentOptions.map((option) => (
+          <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+            <div class="flex items-start gap-4">
+              {/* Icon */}
+              <div class="w-14 h-14 bg-orange-100 rounded-xl flex items-center justify-center shrink-0">
+                {option.icon === "cash" && (
+                  <svg
+                    class="w-7 h-7 text-orange-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
+                    />
+                  </svg>
+                )}
+                {option.icon === "bank" && (
+                  <svg
+                    class="w-7 h-7 text-orange-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"
+                    />
+                  </svg>
+                )}
+                {option.icon === "card" && (
+                  <svg
+                    class="w-7 h-7 text-orange-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                    />
+                  </svg>
+                )}
+              </div>
+
+              {/* Content */}
+              <div>
+                <h3 class="font-semibold text-gray-900 text-lg mb-1">
+                  {option.title}
+                </h3>
+                <p class="text-gray-600 text-sm">{option.description}</p>
+              </div>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+
+    <!-- Cards Section -->
+    <div class="bg-gray-50 rounded-2xl p-8 border border-gray-100">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-8">
+        <!-- Card Logos -->
+        <div class="flex-1">
+          <p class="text-sm text-gray-500 mb-4 text-center md:text-left">
+            Tarjetas aceptadas
+          </p>
+          <div class="flex flex-wrap items-center justify-center md:justify-start gap-4">
+            {
+              cardLogos.map((card) => (
+                <div
+                  class="bg-white rounded-lg px-4 py-2 border border-gray-200"
+                  title={card.name}
+                >
+                  <span class="text-gray-700 font-medium text-sm">
+                    {card.name}
+                  </span>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+
+        <!-- Cuotas Badge -->
+        <div
+          class="shrink-0 bg-orange-500 text-white px-6 py-4 rounded-xl shadow-lg shadow-orange-500/25"
+        >
+          <div class="text-center">
+            <p class="text-2xl font-bold">Hasta 12 cuotas</p>
+            <p class="text-orange-100 text-sm">sin interés con tarjetas</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Security Note -->
+    <div class="mt-8 flex items-center justify-center gap-3 text-gray-500">
+      <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+        <path
+          fill-rule="evenodd"
+          d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+          clip-rule="evenodd"></path>
+      </svg>
+      <p class="text-sm">
+        Todos los pagos son procesados de forma segura y encriptada
+      </p>
+    </div>
+  </div>
+</section>

@@ -1,4 +1,5 @@
 import { getImageUrl } from '../../lib/api';
+import { formatPrice } from '../../lib/formatters';
 
 interface ProductCardProps {
   id: number;
@@ -8,14 +9,6 @@ interface ProductCardProps {
   imagen?: string | null;
   material?: string;
   onAddToCart?: (id: number) => void;
-}
-
-function formatPrice(price: number): string {
-  return new Intl.NumberFormat("es-AR", {
-    style: "currency",
-    currency: "ARS",
-    minimumFractionDigits: 0,
-  }).format(price);
 }
 
 export default function ProductCard({
@@ -30,17 +23,17 @@ export default function ProductCard({
   const imageUrl = getImageUrl(imagen);
 
   return (
-    <article className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100">
+    <article className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
       {/* Product Image */}
       <a
         href={`/producto/${id}`}
-        className="block relative aspect-square bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden"
+        className="block relative aspect-square bg-linear-to-br from-gray-50 to-gray-100 overflow-hidden"
       >
         {imageUrl ? (
           <img
             src={imageUrl}
             alt={nombre}
-            className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-full object-contain p-4"
             loading="lazy"
             onError={(e) => {
               // If image fails to load, hide it
@@ -48,7 +41,7 @@ export default function ProductCard({
             }}
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
+          <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-gray-100 to-gray-200">
             <svg
               className="w-20 h-20 text-gray-300"
               fill="none"
@@ -80,11 +73,11 @@ export default function ProductCard({
               e.stopPropagation();
               onAddToCart(id);
             }}
-            className="absolute bottom-3 right-3 w-10 h-10 bg-primary-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all shadow-lg hover:bg-primary-700"
+            className="absolute bottom-3 right-3 w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center shadow-lg"
             aria-label="Agregar al carrito"
           >
             <svg
-              className="w-5 h-5"
+              className="w-6 h-6"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -92,7 +85,7 @@ export default function ProductCard({
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth={2}
+                strokeWidth={2.5}
                 d="M12 4v16m8-8H4"
               />
             </svg>
@@ -105,7 +98,7 @@ export default function ProductCard({
         {material && (
           <span className="text-xs text-gray-500 mb-1 block">{material}</span>
         )}
-        <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors line-clamp-2">
+        <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
           <a href={`/producto/${id}`}>{nombre}</a>
         </h3>
         <p className="text-lg font-bold text-primary-600">{formatPrice(precio)}</p>
